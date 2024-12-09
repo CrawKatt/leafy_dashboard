@@ -1,4 +1,7 @@
 mod app;
+mod frontend;
+mod services;
+
 
 use crate::app::*;
 use actix_files::Files;
@@ -57,17 +60,15 @@ async fn main() -> std::io::Result<()> {
 #[get("/api/auth")]
 async fn auth_redirect() -> HttpResponse {
     let client_id = env::var("CLIENT_ID").expect("DISCORD_CLIENT_ID not set");
-    let auth_url = env::var("AUTH_URL").expect("DISCORD_AUTH_URL not set");
-    let redirect_uri = env::var("CALLBACK_URL").expect("DISCORD_REDIRECT_URI not set");
     let client_secret = env::var("CLIENT_SECRET").expect("DISCORD_CLIENT_SECRET not set");
 
     let client = BasicClient::new(
         ClientId::new(client_id),
         Some(ClientSecret::new(client_secret)),
-        AuthUrl::new(auth_url).expect("Invalid auth URL"),
+        AuthUrl::new("https://discord.com/api/oauth2/authorize".to_string()).expect("Invalid auth URL"),
         None
     )
-        .set_redirect_uri(RedirectUrl::new(redirect_uri).expect("Invalid redirect URI"));
+        .set_redirect_uri(RedirectUrl::new("http://localhost:3000/dashboard".to_string()).expect("Invalid redirect URI"));
 
     let auth_request = client
         .authorize_url(|| CsrfToken::new_random())
@@ -79,47 +80,3 @@ async fn auth_redirect() -> HttpResponse {
         .append_header(("Location", auth_url))
         .finish()
 }
-
-/*
-#[get("/api/callback")]
-async fn callback(query: web::Query<std::collections::HashMap<String, String>>) -> impl Responder {
-    let code = match query.get("code") {
-        Some(code) => code.clone(),
-        None => return HttpResponse::BadRequest().body("Authorization code is missing."),
-    };
-
-    let db = setup_db().await;
-    let client_id = env::var("CLIENT_ID").expect("DISCORD_CLIENT_ID not set");
-    let client_secret = env::var("CLIENT_SECRET").expect("DISCORD_CLIENT_SECRET not set");
-    let token_url = env::var("DISCORD_TOKEN_URL").expect("DISCORD_TOKEN_URL not set");
-
-    let client = BasicClient::new(
-        ClientId::new(client_id),
-        Some(ClientSecret::new(client_secret)),
-        AuthUrl::new(env::var("AUTH_URL").expect("Invalid auth URL")).expect("Invalid auth URL"),
-        Some(TokenUrl::new(token_url).expect("Invalid token URL")),
-    )
-        .set_redirect_uri(
-            RedirectUrl::new(env::var("CALLBACK_URL").expect("Invalid redirect URI"))
-                .expect("Invalid redirect URI"),
-        );
-
-    // Intercambiar el código por un token
-    let token_response = client
-        .exchange_code(AuthorizationCode::new(code))
-        .request_async(async_http_client)
-        .await;
-
-    let token = match token_response {
-        Ok(token) => token,
-        Err(_) => return HttpResponse::InternalServerError().body("Error during token exchange."),
-    };
-
-    let access_token = token.access_token().secret().to_string();
-
-    HttpResponse::Ok()
-    //let user_info = get_user_info(&access_token).await;
-
-    //resolve_user_info(db, token, user_info).await
-}
-*/

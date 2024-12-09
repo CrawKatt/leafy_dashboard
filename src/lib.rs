@@ -1,9 +1,9 @@
-mod app;
-mod frontend;
-mod api;
+pub mod app;
+pub mod frontend;
+pub mod api;
 pub mod db;
-mod models;
-mod services;
+pub mod models;
+pub mod services;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]

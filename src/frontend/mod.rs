@@ -1,2 +1,2 @@
-mod components;
-mod pages;
+pub mod components;
+pub mod pages;

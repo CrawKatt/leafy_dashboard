@@ -1,2 +1,2 @@
-mod dashboard;
-mod login;
+pub mod dashboard;
+pub mod login;

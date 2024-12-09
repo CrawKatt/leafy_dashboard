@@ -1,0 +1,166 @@
+use leptos::prelude::*;
+use leptos_meta::*;
+use serde::{Serialize, Deserialize};
+use leptos_router::{
+    components::{FlatRoutes, Route, Router},
+    StaticSegment,
+};
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct Server {
+    id: String,
+    name: String,
+    role: String,
+    icon: String,
+}
+
+#[component]
+pub fn App() -> impl IntoView {
+    provide_meta_context();
+
+    view! {
+        <Stylesheet id="leptos" href="/pkg/tailwind_actix.css"/>
+        <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
+        <Router>
+            <FlatRoutes fallback=|| "Page not found.">
+                <Route path=StaticSegment("") view=Home/>
+                <Route path=StaticSegment("/dashboard") view=Dashboard/>
+                <Route path=StaticSegment("/api/auth") view=AuthRedirect/>
+            </FlatRoutes>
+        </Router>
+    }
+}
+
+#[component]
+fn Home() -> impl IntoView {
+    view! {
+        <Title text="Leptos + Tailwindcss"/>
+        <main>
+            <div class="flex items-center justify-center min-h-screen bg-gray-100">
+                <button
+                    class="flex items-center border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                    style="background-color: #5865F2;">
+
+                    <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="800px" height="800px" viewBox="0 -28.5 256 256" version="1.1" preserveAspectRatio="xMidYMid">
+                        <g>
+                            <path
+                                d="M216.856339,16.5966031 C200.285002,8.84328665 182.566144,3.2084988 164.041564,0 C161.766523,4.11318106 159.108624,9.64549908 157.276099,14.0464379 C137.583995,11.0849896 118.072967,11.0849896 98.7430163,14.0464379 C96.9108417,9.64549908 94.1925838,4.11318106 91.8971895,0 C73.3526068,3.2084988 55.6133949,8.86399117 39.0420583,16.6376612 C5.61752293,67.146514 -3.4433191,116.400813 1.08711069,164.955721 C23.2560196,181.510915 44.7403634,191.567697 65.8621325,198.148576 C71.0772151,190.971126 75.7283628,183.341335 79.7352139,175.300261 C72.104019,172.400575 64.7949724,168.822202 57.8887866,164.667963 C59.7209612,163.310589 61.5131304,161.891452 63.2445898,160.431257 C105.36741,180.133187 151.134928,180.133187 192.754523,160.431257 C194.506336,161.891452 196.298154,163.310589 198.110326,164.667963 C191.183787,168.842556 183.854737,172.420929 176.223542,175.320965 C180.230393,183.341335 184.861538,190.991831 190.096624,198.16893 C211.238746,191.588051 232.743023,181.531619 254.911949,164.955721 C260.227747,108.668201 245.831087,59.8662432 216.856339,16.5966031 Z M85.4738752,135.09489 C72.8290281,135.09489 62.4592217,123.290155 62.4592217,108.914901 C62.4592217,94.5396472 72.607595,82.7145587 85.4738752,82.7145587 C98.3405064,82.7145587 108.709962,94.5189427 108.488529,108.914901 C108.508531,123.290155 98.3405064,135.09489 85.4738752,135.09489 Z M170.525237,135.09489 C157.88039,135.09489 147.510584,123.290155 147.510584,108.914901 C147.510584,94.5396472 157.658606,82.7145587 170.525237,82.7145587 C183.391518,82.7145587 193.761324,94.5189427 193.539891,108.914901 C193.539891,123.290155 183.391518,135.09489 170.525237,135.09489 Z"
+                                fill="#FFFFFF" fill-rule="nonzero">
+
+                            </path>
+                        </g>
+                    </svg>
+
+                    <span>Connect with Discord</span>
+
+                </button>
+            </div>
+        </main>
+    }
+}
+
+#[component]
+pub fn AuthRedirect() -> impl IntoView {
+    let discord_auth_url = "http://localhost:8080/api/auth";
+
+    view! {
+        <div>
+            <h1>"Login with Discord"</h1>
+            <p>"To start using the dashboard, please log in with Discord."</p>
+            <a href=discord_auth_url>"Login with Discord"</a>
+        </div>
+    }
+}
+
+#[component]
+pub fn Dashboard() -> impl IntoView {
+    let servers = vec![
+        Server {
+            id: "1".to_string(),
+            name: "Forest Guardians".to_string(),
+            role: "Owner".to_string(),
+            icon: "/placeholder.svg?height=64&width=64".to_string(),
+        },
+        Server {
+            id: "2".to_string(),
+            name: "Nature's Haven".to_string(),
+            role: "Admin".to_string(),
+            icon: "/placeholder.svg?height=64&width=64".to_string(),
+        },
+        Server {
+            id: "3".to_string(),
+            name: "Woodland Sanctuary".to_string(),
+            role: "Owner".to_string(),
+            icon: "/placeholder.svg?height=64&width=64".to_string(),
+        },
+    ];
+
+    let (search_query, set_search_query) = signal(String::new());
+
+    let filtered_servers = move || {
+        servers
+            .iter()
+            .filter(|server| {
+                server.name.to_lowercase().contains(&search_query.get().to_lowercase())
+            })
+            .cloned()
+            .collect::<Vec<Server>>()
+    };
+
+    view! {
+        <div class="min-h-screen bg-gradient-to-b from-green-900 via-green-800 to-green-900">
+            <div class="mx-auto max-w-6xl p-6">
+                <div class="mb-8 text-center">
+                    <h1 class="mb-4 text-4xl font-bold text-green-50">"Select a server"</h1>
+                    <div class="relative mx-auto max-w-xl">
+                        <svg class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-green-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6a4 4 0 100 8 4 4 0 000-8zm0 0l6 6" />
+                        </svg>
+                        <input
+                            type="text"
+                            placeholder="Search servers..."
+                            on:input=move |e| set_search_query.set(event_target_value(&e))
+                            class="w-full bg-green-950/50 pl-10 text-green-50 placeholder-green-300 backdrop-blur-sm ring-green-500 focus-visible:ring-green-400"
+                        />
+                    </div>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {filtered_servers().into_iter().map(|server| view! {
+                        <div
+                            data-key={server.id.clone()}
+                            class="group overflow-hidden border-green-700/30 bg-green-950/30 backdrop-blur-sm transition-colors hover:bg-green-950/50"
+                        >
+                            <div class="p-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div class="relative h-16 w-16 overflow-hidden rounded-full border-2 border-green-600/30 bg-green-800/30">
+                                            <img
+                                                src={server.icon.clone()}
+                                                alt={server.name.clone()}
+                                                class="object-cover transition-transform group-hover:scale-110"
+                                            />
+                                        </div>
+                                        <div>
+                                            <h2 class="text-lg font-semibold text-green-50">{server.name.clone()}</h2>
+                                            <p class="text-sm text-green-300">{server.role.clone()}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="border border-green-600/30 bg-green-800/30 text-green-50 hover:bg-green-800/50 hover:text-green-100 px-4 py-2 rounded"
+                                    >
+                                        "Go"
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }).collect::<Vec<_>>()}
+                </div>
+
+                <div class="pointer-events-none fixed inset-0 z-[-1] bg-[radial-gradient(circle_at_50%_120%,rgba(34,197,94,0.1),rgba(0,0,0,0))]" />
+                <div class="pointer-events-none fixed inset-0 z-[-1] bg-[url('/placeholder.svg?height=32&width=32')] opacity-5" />
+            </div>
+        </div>
+    }
+}

@@ -1,8 +1,8 @@
-use actix_web::*;
+use actix_web::{get, HttpResponse, Responder};
 use crate::models::user::Guild;
 
 #[get("/api/servers")]
-async fn get_servers(req: HttpRequest) -> impl Responder {
+async fn get_servers() -> impl Responder {
     // Lógica para devolver los servidores
     HttpResponse::Ok().json(vec![Guild {
         id: "1".to_string(),

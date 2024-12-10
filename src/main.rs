@@ -1,7 +1,8 @@
+// Añadir los mod tanto en main.rs como en lib.rs
 mod app;
 mod frontend;
 mod services;
-
+mod models;
 
 use crate::app::*;
 use actix_files::Files;
@@ -13,6 +14,7 @@ use leptos_meta::MetaTags;
 use oauth2::basic::BasicClient;
 use oauth2::{AuthUrl, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope as OAuth2Scope};
 use std::env;
+use tailwind_actix::api::user::get_servers;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -28,6 +30,7 @@ async fn main() -> std::io::Result<()> {
 
         App::new()
             .service(auth_redirect)
+            .service(get_servers)
             .leptos_routes(routes, {
                 let leptos_options = leptos_options.clone();
                 move || {

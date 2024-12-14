@@ -7,6 +7,7 @@ pub struct Guild {
     pub name: String,
     pub owner: bool,
     pub icon: Option<String>,
+    pub permissions: Option<u64>
 }
 
 pub async fn get_user_guilds(access_token: &str) -> Result<Vec<Guild>, reqwest::Error> {

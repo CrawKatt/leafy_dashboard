@@ -10,23 +10,21 @@ pub fn Dashboard() -> impl IntoView {
     let (servers, set_servers) = signal(Vec::<Server>::new());
     let fetch_servers = move || {
         spawn_local(async move {
-            match reqwest::Client::new()
+            let client = reqwest::Client::new()
                 .get("http://localhost:3000/api/servers")
                 .send()
-                .await
-            {
-                Ok(response) => {
-                    if response.status().is_success() {
-                        if let Ok(data) = response.json::<Vec<Server>>().await {
-                            set_servers.set(data);
-                        }
-                    } else {
-                        log::error!("Falló al consultar servidores: {}", response.status());
-                    }
+                .await;
+
+            let Ok(response) = client else {
+                return log::error!("Ocurrió un error al conectar con la API")
+            };
+
+            if response.status().is_success() {
+                if let Ok(data) = response.json::<Vec<Server>>().await {
+                    set_servers.set(data);
                 }
-                Err(e) => {
-                    log::error!("Error al conectar con la API: {:?}", e);
-                }
+            } else {
+                log::error!("Falló al consultar servidores: {}", response.status());
             }
         });
     };

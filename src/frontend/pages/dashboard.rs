@@ -3,7 +3,6 @@ use leptos::prelude::*;
 use leptos::task::spawn_local;
 
 use crate::frontend::components::server_card::{Server, ServerCard};
-//use crate::models::user::Guild;
 
 // LADO DEL SERVIDOR, NO USAR REQWASM NI COSAS CON WASM. UTILIZAR ÚNICAMENTE CÓDIGO NATIVO
 #[component]

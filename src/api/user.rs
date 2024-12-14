@@ -13,21 +13,21 @@ pub async fn get_servers(req: HttpRequest) -> impl Responder {
         return HttpResponse::Unauthorized().body("Access token not found");
     }
 
-    match get_user_guilds(&access_token).await {
-        Ok(guilds) => {
-            // Transforma Guild a Server
-            let servers: Vec<Server> = guilds
-                .into_iter()
-                .map(|guild| Server {
-                    id: guild.id.clone(),
-                    name: guild.name,
-                    owner: if guild.owner { "Owner".to_string() } else { "Member".to_string() },
-                    icon: guild.icon.map(|icon| format!("https://cdn.discordapp.com/icons/{}/{}.png", guild.id, icon)),
-                })
-                .collect();
+    let user_guilds = get_user_guilds(&access_token).await;
+    let Ok(guilds) = user_guilds else {
+        return HttpResponse::InternalServerError().body("Ocurrió un error al obtener los servidores del usuario")
+    };
 
-            HttpResponse::Ok().json(servers)
-        }
-        Err(err) => HttpResponse::InternalServerError().body(format!("Error: {}", err)),
-    }
+    let servers: Vec<Server> = guilds
+        .into_iter()
+        .filter(|guild| guild.owner || guild.permissions.unwrap_or(0) & 0x8 != 0) // 0x8 = ADMINISTRADOR
+        .map(|guild| Server {
+            id: guild.id.clone(),
+            name: guild.name,
+            owner: if guild.owner { "Owner".to_string() } else { "Member".to_string() },
+            icon: guild.icon.map(|icon| format!("https://cdn.discordapp.com/icons/{}/{}.png", guild.id, icon)),
+        })
+        .collect();
+
+    HttpResponse::Ok().json(servers)
 }

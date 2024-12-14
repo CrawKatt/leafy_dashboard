@@ -1,6 +1,5 @@
 pub mod app;
 pub mod frontend;
-pub mod api;
 pub mod db;
 pub mod models;
 pub mod services;

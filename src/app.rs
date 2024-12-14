@@ -1,10 +1,10 @@
-use crate::frontend::components::server_card::{Server, ServerCard};
 use leptos::prelude::*;
 use leptos_meta::*;
 use leptos_router::{
     components::{FlatRoutes, Route, Router},
     StaticSegment,
 };
+use crate::frontend::pages::dashboard::Dashboard;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -61,6 +61,7 @@ pub fn AuthRedirect() -> impl IntoView {
     }
 }
 
+/*
 #[component]
 pub fn Dashboard() -> impl IntoView {
     let servers = vec![
@@ -123,3 +124,4 @@ pub fn Dashboard() -> impl IntoView {
         </div>
     }
 }
+*/

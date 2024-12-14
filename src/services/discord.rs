@@ -1,5 +1,13 @@
 use reqwest::Client;
-use crate::models::user::Guild;
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Guild {
+    pub id: String,
+    pub name: String,
+    pub owner: bool,
+    pub icon: Option<String>,
+}
 
 pub async fn get_user_guilds(access_token: &str) -> Result<Vec<Guild>, reqwest::Error> {
     let client = Client::new();

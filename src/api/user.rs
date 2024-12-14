@@ -1,21 +1,9 @@
-use actix_web::{get, HttpResponse, Responder};
-use crate::models::user::Guild;
+use actix_web::{get, HttpRequest, HttpResponse, Responder};
+use crate::frontend::components::server_card::Server;
+use crate::services::discord::get_user_guilds;
 
-#[get("/api/servers")]
-async fn get_servers() -> impl Responder {
-    // Lógica para devolver los servidores
-    HttpResponse::Ok().json(vec![Guild {
-        id: "1".to_string(),
-        name: "Example Server".to_string(),
-        owner: true,
-        icon: None,
-    }])
-}
-
-/*
 #[get("/api/servers")]
 pub async fn get_servers(req: HttpRequest) -> impl Responder {
-    // Obtén el token del usuario (almacenado en una cookie segura)
     let access_token = req
         .cookie("access_token")
         .map(|c| c.value().to_string())
@@ -25,10 +13,21 @@ pub async fn get_servers(req: HttpRequest) -> impl Responder {
         return HttpResponse::Unauthorized().body("Access token not found");
     }
 
-    // Llama a la API de Discord para obtener los servidores del usuario
     match get_user_guilds(&access_token).await {
-        Ok(servers) => HttpResponse::Ok().json(servers), // Retorna los servidores como JSON
+        Ok(guilds) => {
+            // Transforma Guild a Server
+            let servers: Vec<Server> = guilds
+                .into_iter()
+                .map(|guild| Server {
+                    id: guild.id.clone(),
+                    name: guild.name,
+                    owner: if guild.owner { "Owner".to_string() } else { "Member".to_string() },
+                    icon: guild.icon.map(|icon| format!("https://cdn.discordapp.com/icons/{}/{}.png", guild.id, icon)),
+                })
+                .collect();
+
+            HttpResponse::Ok().json(servers)
+        }
         Err(err) => HttpResponse::InternalServerError().body(format!("Error: {}", err)),
     }
 }
-*/

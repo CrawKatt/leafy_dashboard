@@ -1,39 +1,38 @@
 use leptos::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
-use reqwasm::http::Request;
-use crate::frontend::components::server_card::{Server, ServerCard};
-use crate::models::user::Guild;
 
+use crate::frontend::components::server_card::{Server, ServerCard};
+//use crate::models::user::Guild;
+
+// LADO DEL SERVIDOR, NO USAR REQWASM NI COSAS CON WASM. UTILIZAR ÚNICAMENTE CÓDIGO NATIVO
 #[component]
 pub fn Dashboard() -> impl IntoView {
-    let (servers, set_servers) = signal(Vec::<Guild>::new());
+    let (servers, set_servers) = signal(Vec::<Server>::new());
     let fetch_servers = move || {
         spawn_local(async move {
-            let response = Request::get("/api/servers")
+            match reqwest::Client::new()
+                .get("http://localhost:3000/api/servers")
                 .send()
-                .await;
-
-            if let Ok(res) = response {
-                if res.status() == 200 {
-                    if let Ok(data) = res.json::<Vec<Guild>>().await {
-                        set_servers.set(data);
+                .await
+            {
+                Ok(response) => {
+                    if response.status().is_success() {
+                        if let Ok(data) = response.json::<Vec<Server>>().await {
+                            set_servers.set(data);
+                        }
+                    } else {
+                        log::error!("Falló al consultar servidores: {}", response.status());
                     }
+                }
+                Err(e) => {
+                    log::error!("Error al conectar con la API: {:?}", e);
                 }
             }
         });
     };
 
     fetch_servers();
-    /*
-    let servers = create_resource(|| async {
-        let response = Request::get("/api/servers")
-            .send()
-            .await
-            .unwrap();
-        response.json::<Vec<Server>>().await.unwrap()
-    });
-    */
 
     view! {
         <div class="min-h-screen bg-gradient-to-b from-green-900 via-green-800 to-green-900">
@@ -44,14 +43,9 @@ pub fn Dashboard() -> impl IntoView {
 
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {move || {
-                        servers.get().iter().map(|guild| {
+                        servers.get().iter().map(|server| {
                             view! {
-                                <ServerCard server=Server {
-                                    id: guild.id.clone(),
-                                    name: guild.name.clone(),
-                                    owner: "Owner".to_string(),
-                                    icon: Some(guild.icon.clone().unwrap_or("/default-icon.png".to_string()))
-                                } />
+                                <ServerCard server=server.clone() />
                             }
                         }).collect::<Vec<_>>()
                     }}

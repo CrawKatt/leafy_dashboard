@@ -29,6 +29,8 @@ pub async fn auth_redirect() -> impl Responder {
         .authorize_url(|| CsrfToken::new_random())
         .add_scope(OAuth2Scope::new("identify".to_string()))
         .add_scope(OAuth2Scope::new("guilds".to_string()))
+        .add_scope(OAuth2Scope::new("guilds.members.read".to_string()))
+        .add_scope(OAuth2Scope::new("role_connections.write".to_string()))
         .url();
 
     // Redirige al usuario a la página de autorización de Discord
@@ -61,10 +63,11 @@ pub async fn auth_callback(query: web::Query<AuthQuery>) -> impl Responder {
         return HttpResponse::InternalServerError().body("Error al obtener el token de acceso")
     };
 
-    let access_token = token.access_token().secret();
+    let access_token = token
+        .access_token()
+        .secret();
 
-    // Configura la cookie con el token de acceso
-    let token_cookie = Cookie::build("access_token", access_token.clone())
+    let token_cookie = Cookie::build("access_token", access_token)
         .path("/")
         .http_only(true)
         .secure(false) // Cambiar a `true` en producción con HTTPS

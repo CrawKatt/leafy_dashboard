@@ -2,12 +2,12 @@ use leptos::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
 
-use crate::frontend::components::server_card::{Server, ServerCard};
+use crate::frontend::components::server_card::{DiscordServer, ServerCard};
 
 // LADO DEL SERVIDOR, NO USAR REQWASM NI COSAS CON WASM. UTILIZAR ÚNICAMENTE CÓDIGO NATIVO
 #[component]
 pub fn Dashboard() -> impl IntoView {
-    let (servers, set_servers) = signal(Vec::<Server>::new());
+    let (servers, set_servers) = signal(Vec::<DiscordServer>::new());
     let fetch_servers = move || {
         spawn_local(async move {
             let client = reqwest::Client::new()
@@ -20,7 +20,7 @@ pub fn Dashboard() -> impl IntoView {
             };
 
             if response.status().is_success() {
-                if let Ok(data) = response.json::<Vec<Server>>().await {
+                if let Ok(data) = response.json::<Vec<DiscordServer>>().await {
                     set_servers.set(data);
                 }
             } else {

@@ -1,5 +1,5 @@
 use actix_web::{get, HttpRequest, HttpResponse, Responder};
-use crate::frontend::components::server_card::Server;
+use crate::frontend::components::server_card::DiscordServer;
 use crate::services::discord::get_user_guilds;
 
 #[get("/api/servers")]
@@ -18,11 +18,11 @@ pub async fn get_servers(req: HttpRequest) -> impl Responder {
         return HttpResponse::InternalServerError().body("Ocurrió un error al obtener los servidores del usuario")
     };
 
-    let servers: Vec<Server> = guilds
+    let servers: Vec<DiscordServer> = guilds
         .into_iter()
         .filter(|guild| guild.owner || guild.permissions.unwrap_or(0) & 0x8 != 0) // 0x8 = ADMINISTRADOR
-        .map(|guild| Server {
-            id: guild.id.clone(),
+        .map(|guild| DiscordServer {
+            guild_id: guild.id.clone(),
             name: guild.name,
             owner: if guild.owner { "Owner".to_string() } else { "Member".to_string() },
             icon: guild.icon.map(|icon| format!("https://cdn.discordapp.com/icons/{}/{}.png", guild.id, icon)),

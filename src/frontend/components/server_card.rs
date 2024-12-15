@@ -2,21 +2,21 @@ use leptos::*;
 use leptos::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
-pub struct Server {
-    pub id: String,
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
+pub struct DiscordServer {
+    pub guild_id: String,
     pub name: String,
     pub owner: String,
     pub icon: Option<String>,
 }
 
 #[component]
-pub fn ServerCard(server: Server) -> impl IntoView {
+pub fn ServerCard(server: DiscordServer) -> impl IntoView {
     let icon_url = server.icon.clone().unwrap_or_else(|| "/default-icon.png".to_string());
 
     view! {
         <div
-            data-key={server.id.clone()}
+            data-key={server.guild_id.clone()}
             class="group overflow-hidden border-green-700/30 bg-green-950/30 backdrop-blur-sm transition-colors hover:bg-green-950/50"
         >
             <div class="p-6">

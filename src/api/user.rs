@@ -1,4 +1,4 @@
-use actix_web::{get, HttpRequest, HttpResponse, Responder};
+use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
 use crate::frontend::components::server_card::DiscordServer;
 use crate::services::discord::get_user_guilds;
 
@@ -30,4 +30,38 @@ pub async fn get_servers(req: HttpRequest) -> impl Responder {
         .collect();
 
     HttpResponse::Ok().json(servers)
+}
+
+#[get("/api/servers/{guild_id}")]
+pub async fn get_guild_id(
+    guild_id: web::Path<String>,
+    req: HttpRequest,
+) -> impl Responder {
+    // Verifica si existe un token de acceso
+    let access_token = req
+        .cookie("access_token")
+        .map(|c| c.value().to_string())
+        .unwrap_or_default();
+
+    if access_token.is_empty() {
+        return HttpResponse::Unauthorized().body("Access token not found");
+    }
+
+    // Aquí puedes agregar lógica para consultar los datos del servidor específico usando el guild_id.
+    // Ejemplo básico de respuesta:
+    let guild_id = guild_id.into_inner();
+
+    // Simula obtener datos del servidor, podrías reemplazar con una consulta a un servicio o BD.
+    let server = DiscordServer {
+        guild_id: guild_id.clone(),
+        name: format!("Server {}", guild_id),
+        owner: "Owner".to_string(),
+        icon: Some(format!(
+            "https://cdn.discordapp.com/icons/{}/default.png",
+            guild_id
+        )),
+    };
+
+    // Devuelve los datos del servidor
+    HttpResponse::Ok().json(server)
 }

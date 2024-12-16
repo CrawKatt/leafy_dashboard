@@ -5,7 +5,7 @@ mod services;
 mod models;
 mod api; // NO IMPORTAR LOS MÓDULOS DEL BACKEND EN lib.rs
 
-use crate::api::user::get_servers;
+use crate::api::user::{get_guild_id, get_servers};
 use crate::app::*;
 use actix_files::Files;
 use actix_web::*;
@@ -31,6 +31,7 @@ async fn main() -> std::io::Result<()> {
             .service(auth_redirect)
             .service(get_servers)
             .service(auth_callback)
+            .service(get_guild_id)
             .leptos_routes(routes, {
                 let leptos_options = leptos_options.clone();
                 move || {

@@ -1,10 +1,11 @@
+use crate::frontend::pages::dashboard::Dashboard;
+use crate::frontend::pages::server_settings::ServerSettings;
 use leptos::prelude::*;
 use leptos_meta::*;
 use leptos_router::{
     components::{FlatRoutes, Route, Router},
-    StaticSegment,
+    path
 };
-use crate::frontend::pages::dashboard::Dashboard;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -15,9 +16,10 @@ pub fn App() -> impl IntoView {
         <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
         <Router>
             <FlatRoutes fallback=|| "Page not found.">
-                <Route path=StaticSegment("") view=Home/>
-                <Route path=StaticSegment("/dashboard") view=Dashboard/>
-                <Route path=StaticSegment("/api/auth") view=AuthRedirect/>
+                <Route path=path!("") view=Home/>
+                <Route path=path!("/dashboard") view=Dashboard/>
+                <Route path=path!("/dashboard/:guild_id") view=ServerSettings/>
+                <Route path=path!("/api/auth") view=AuthRedirect/>
             </FlatRoutes>
         </Router>
     }
@@ -60,68 +62,3 @@ pub fn AuthRedirect() -> impl IntoView {
         </div>
     }
 }
-
-/*
-#[component]
-pub fn Dashboard() -> impl IntoView {
-    let servers = vec![
-        Server {
-            id: "1".to_string(),
-            name: "Forest Guardians".to_string(),
-            owner: "Owner".to_string(),
-            icon: Some("/placeholder.svg?height=64&width=64".to_string()),
-        },
-        Server {
-            id: "2".to_string(),
-            name: "Nature's Haven".to_string(),
-            owner: "Admin".to_string(),
-            icon: Some("/placeholder.svg?height=64&width=64".to_string()),
-        },
-        Server {
-            id: "3".to_string(),
-            name: "Woodland Sanctuary".to_string(),
-            owner: "Owner".to_string(),
-            icon: Some("/placeholder.svg?height=64&width=64".to_string()),
-        },
-    ];
-
-    let (search_query, set_search_query) = signal(String::new());
-
-    let filtered_servers = move || {
-        servers
-            .iter()
-            .filter(|server| {
-                server.name.to_lowercase().contains(&search_query.get().to_lowercase())
-            })
-            .cloned()
-            .collect::<Vec<Server>>()
-    };
-
-    view! {
-        <div class="min-h-screen bg-gradient-to-b from-green-900 via-green-800 to-green-900">
-            <div class="mx-auto max-w-6xl p-6">
-                <div class="mb-8 text-center">
-                    <h1 class="mb-4 text-4xl font-bold text-green-50">"Select a server"</h1>
-                    <div class="relative mx-auto max-w-xl">
-                        <svg class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-green-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6a4 4 0 100 8 4 4 0 000-8zm0 0l6 6" />
-                        </svg>
-                        <input
-                            type="text"
-                            placeholder="Search servers..."
-                            on:input=move |e| set_search_query.set(event_target_value(&e))
-                            class="w-full bg-green-950/50 pl-10 text-green-50 placeholder-green-300 backdrop-blur-sm ring-green-500 focus-visible:ring-green-400"
-                        />
-                    </div>
-                </div>
-
-                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {filtered_servers().into_iter().map(|server| view! {
-                        <ServerCard server=server />
-                    }).collect::<Vec<_>>()}
-                </div>
-            </div>
-        </div>
-    }
-}
-*/

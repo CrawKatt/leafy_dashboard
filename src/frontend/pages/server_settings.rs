@@ -4,7 +4,6 @@ use crate::frontend::components::header::Header;
 use crate::frontend::components::sidebar::Sidebar;
 
 use leptos::prelude::*;
-use leptos_router::hooks::use_params;
 use leptos_router::params::Params;
 
 #[derive(Params, PartialEq)]
@@ -14,13 +13,7 @@ struct DashboardParams {
 
 #[component]
 pub fn ServerSettings() -> impl IntoView {
-    let params = use_params::<DashboardParams>();
-    let guild_id = move || params
-        .read()
-        .as_ref()
-        .ok()
-        .and_then(|params| params.guild_id.clone())
-        .unwrap_or_default();
+    let active_dropdown = RwSignal::new(None);
 
     view! {
         <div class="flex min-h-screen bg-gray-900 text-white">
@@ -29,22 +22,60 @@ pub fn ServerSettings() -> impl IntoView {
                 <Header title="Bot Configuration" />
                 <div class="p-6 grid grid-cols-2 gap-6">
                     <Card title="Admin Roles">
-                        <Dropdown options={vec!["Jardinero", "Arquitecto", "Helper", "Mei-chan", "Chikistrikis"]} />
+                        <Dropdown
+                            options={vec!["Jardinero", "Arquitecto", "Helper", "Mei-chan", "Chikistrikis"]}
+                            index={0}
+                            active_dropdown={active_dropdown}
+                            allow_multiple=true
+                        />
                     </Card>
                     <Card title="Forbidden Roles">
-                        <Dropdown options={vec!["Jardinero", "Arquitecto", "Helper", "Mei-chan", "Chikistrikis"]} />
+                        <Dropdown
+                            options={vec!["Jardinero", "Arquitecto", "Helper", "Mei-chan", "Chikistrikis"]}
+                            index={1}
+                            active_dropdown={active_dropdown}
+                            allow_multiple=true
+                        />
                     </Card>
                     <Card title="Timeout Duration">
-                        <Dropdown options={vec!["1 hour", "6 hours", "1 day"]} />
+                        <Dropdown
+                            options={vec!["1 minute", "1 hour", "1 day", "1 week"]}
+                            index={2}
+                            active_dropdown={active_dropdown}
+                            allow_multiple=false
+                        />
                     </Card>
                     <Card title="Welcome Channel">
-                        <Dropdown options={vec!["Channel 1", "Channel 2"]} />
+                        <Dropdown
+                            options={vec!["Channel 1", "Channel 2"]}
+                            index={3}
+                            active_dropdown={active_dropdown}
+                            allow_multiple=false
+                        />
                     </Card>
                     <Card title="Logs Channel">
-                        <Dropdown options={vec!["Channel 1", "Channel 2"]} />
+                        <Dropdown
+                            options={vec!["Channel 1", "Channel 2"]}
+                            index={4}
+                            active_dropdown={active_dropdown}
+                            allow_multiple=false
+                        />
                     </Card>
                     <Card title="Exceptions Channel">
-                        <Dropdown options={vec!["Channel 1", "Channel 2"]} />
+                        <Dropdown
+                            options={vec!["Channel 1", "Channel 2"]}
+                            index={5}
+                            active_dropdown={active_dropdown}
+                            allow_multiple=false
+                        />
+                    </Card>
+                    <Card title="OOC Channel">
+                        <Dropdown
+                            options={vec!["Channel 1", "Channel 2"]}
+                            index={6}
+                            active_dropdown={active_dropdown}
+                            allow_multiple=false
+                        />
                     </Card>
                 </div>
             </div>

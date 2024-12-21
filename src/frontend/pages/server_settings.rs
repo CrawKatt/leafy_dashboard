@@ -1,10 +1,11 @@
+use crate::frontend::components::card::Card;
+use crate::frontend::components::dropdown::Dropdown;
+use crate::frontend::components::header::Header;
+use crate::frontend::components::sidebar::Sidebar;
+
 use leptos::prelude::*;
-use leptos::task::spawn_local;
 use leptos_router::hooks::use_params;
 use leptos_router::params::Params;
-use reqwest::Client;
-use crate::frontend::components::role_selector::{Role, RoleSelector};
-use crate::frontend::components::server_card::DiscordServer;
 
 #[derive(Params, PartialEq)]
 struct DashboardParams {
@@ -21,26 +22,32 @@ pub fn ServerSettings() -> impl IntoView {
         .and_then(|params| params.guild_id.clone())
         .unwrap_or_default();
 
-    let (server_data, set_server_data) = signal(None::<DiscordServer>);
-    let (roles, set_roles) = signal(Vec::<Role>::new());
-    let (selected_roles, set_selected_roles) = signal(Vec::<String>::new());
-
-    spawn_local(async move {
-        let client = Client::new();
-        if let Ok(response) = client.get(&format!("http://localhost:3000/api/roles/{}", guild_id()))
-            .send()
-            .await
-        {
-            if let Ok(data) = response.json::<Vec<Role>>().await {
-                set_roles.set(data);
-            }
-        }
-    });
-
     view! {
-        <div>
-            <h1>"Configuración del Servidor"</h1>
-            <RoleSelector />
+        <div class="flex min-h-screen bg-gray-900 text-white">
+            <Sidebar />
+            <div class="flex-1 flex flex-col">
+                <Header title="Bot Configuration" />
+                <div class="p-6 grid grid-cols-2 gap-6">
+                    <Card title="Admin Roles">
+                        <Dropdown options={vec!["Jardinero", "Arquitecto", "Helper", "Mei-chan", "Chikistrikis"]} />
+                    </Card>
+                    <Card title="Forbidden Roles">
+                        <Dropdown options={vec!["Jardinero", "Arquitecto", "Helper", "Mei-chan", "Chikistrikis"]} />
+                    </Card>
+                    <Card title="Timeout Duration">
+                        <Dropdown options={vec!["1 hour", "6 hours", "1 day"]} />
+                    </Card>
+                    <Card title="Welcome Channel">
+                        <Dropdown options={vec!["Channel 1", "Channel 2"]} />
+                    </Card>
+                    <Card title="Logs Channel">
+                        <Dropdown options={vec!["Channel 1", "Channel 2"]} />
+                    </Card>
+                    <Card title="Exceptions Channel">
+                        <Dropdown options={vec!["Channel 1", "Channel 2"]} />
+                    </Card>
+                </div>
+            </div>
         </div>
     }
 }

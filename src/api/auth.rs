@@ -19,7 +19,7 @@ pub async fn auth_redirect() -> impl Responder {
         ClientId::new(client_id),
         Some(ClientSecret::new(client_secret)),
         AuthUrl::new("https://discord.com/api/oauth2/authorize".to_string()).expect("Invalid auth URL"),
-        None, // No especificamos el TokenUrl aquí
+        None,
     )
         .set_redirect_uri(
             RedirectUrl::new("http://localhost:3000/api/callback".to_string()).expect("Invalid redirect URI"),
@@ -33,7 +33,6 @@ pub async fn auth_redirect() -> impl Responder {
         .add_scope(OAuth2Scope::new("role_connections.write".to_string()))
         .url();
 
-    // Redirige al usuario a la página de autorización de Discord
     HttpResponse::Found()
         .append_header(("Location", auth_url.to_string()))
         .finish()
@@ -70,11 +69,11 @@ pub async fn auth_callback(query: web::Query<AuthQuery>) -> impl Responder {
     let token_cookie = Cookie::build("access_token", access_token)
         .path("/")
         .http_only(true)
-        .secure(false) // Cambiar a `true` en producción con HTTPS
+        .secure(false)
         .finish();
 
     HttpResponse::Found()
-        .append_header(("Location", "/dashboard")) // Redirige al Dashboard
-        .cookie(token_cookie) // Adjunta la cookie con el token
+        .append_header(("Location", "/dashboard"))
+        .cookie(token_cookie)
         .finish()
 }

@@ -1,5 +1,7 @@
+use std::env;
 use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
-use crate::frontend::components::server_card::DiscordServer;
+use reqwest::Client;
+use crate::frontend::components::server_card::{DiscordChannel, DiscordRole, DiscordServer};
 use crate::services::discord::get_user_guilds;
 
 #[get("/api/servers")]
@@ -37,7 +39,6 @@ pub async fn get_guild_id(
     guild_id: web::Path<String>,
     req: HttpRequest,
 ) -> impl Responder {
-    // Verifica si existe un token de acceso
     let access_token = req
         .cookie("access_token")
         .map(|c| c.value().to_string())
@@ -47,11 +48,7 @@ pub async fn get_guild_id(
         return HttpResponse::Unauthorized().body("Access token not found");
     }
 
-    // Aquí puedes agregar lógica para consultar los datos del servidor específico usando el guild_id.
-    // Ejemplo básico de respuesta:
     let guild_id = guild_id.into_inner();
-
-    // Simula obtener datos del servidor, podrías reemplazar con una consulta a un servicio o BD.
     let server = DiscordServer {
         guild_id: guild_id.clone(),
         name: format!("Server {}", guild_id),
@@ -62,6 +59,67 @@ pub async fn get_guild_id(
         )),
     };
 
-    // Devuelve los datos del servidor
     HttpResponse::Ok().json(server)
+}
+
+#[get("/api/roles/{guild_id}")]
+pub async fn get_roles(guild_id: web::Path<String>) -> impl Responder {
+    let access_token = env::var("BOT_TOKEN").expect("BOT TOKEN NOT FOUND");
+    let guild_id = guild_id.into_inner();
+    let client = Client::new();
+
+    match client
+        .get(format!("https://discord.com/api/v10/guilds/{guild_id}/roles"))
+        .header("Authorization", format!("Bot {}", access_token))
+        .send()
+        .await
+    {
+        Ok(response) => {
+            if response.status().is_success() {
+                let roles: Vec<DiscordRole> = match response.json().await {
+                    Ok(roles) => roles,
+                    Err(_) => {
+                        return HttpResponse::InternalServerError().body("Failed to parse roles")
+                    },
+                };
+                HttpResponse::Ok().json(roles)
+            } else {
+                HttpResponse::Unauthorized().body("Failed to fetch roles from Discord")
+            }
+        }
+        Err(_) => {
+            HttpResponse::InternalServerError().body("Request to Discord API failed")
+        }
+    }
+}
+
+#[get("/api/channels/{guild_id}")]
+pub async fn get_channels(guild_id: web::Path<String>) -> impl Responder {
+    let access_token = env::var("BOT_TOKEN").expect("BOT TOKEN NOT FOUND");
+    let guild_id = guild_id.into_inner();
+    let client = Client::new();
+
+    match client
+        .get(format!("https://discord.com/api/v10/guilds/{guild_id}/channels"))
+        .header("Authorization", format!("Bot {}", access_token))
+        .send()
+        .await
+    {
+        Ok(response) => {
+            if response.status().is_success() {
+                let channels: Vec<DiscordChannel> = match response.json().await {
+                    Ok(roles) => roles,
+                    Err(_) => {
+                        return HttpResponse::InternalServerError().body("Failed to parse roles")
+                    },
+                };
+                HttpResponse::Ok().json(channels)
+            } else {
+                HttpResponse::Unauthorized().body("Failed to fetch roles from Discord")
+            }
+        }
+        Err(_) => {
+            HttpResponse::InternalServerError().body("Request to Discord API failed")
+        }
+    }
 }

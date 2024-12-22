@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 #[component]
 pub fn Dropdown(
-    options: Vec<&'static str>,
+    options: Vec<String>,
     index: usize,
     active_dropdown: RwSignal<Option<usize>>,
     allow_multiple: bool, // Nueva propiedad para controlar selección única o múltiple
@@ -40,9 +40,9 @@ pub fn Dropdown(
                     if show_options() { "max-h-60 opacity-100" } else { "max-h-0 opacity-0 pointer-events-none" }
                 )}
             >
-                {options.iter().map(|option| {
-                    let option = *option;
-                    let is_selected = move || selected_options.get().contains(&option.to_string());
+                {options.clone().into_iter().map(|option| {
+                    let option_clone = option.clone();
+                    let is_selected = move || selected_options.get().contains(&option_clone);
 
                     view! {
                         <div
@@ -50,23 +50,23 @@ pub fn Dropdown(
                             on:click=move |_| {
                                 set_selected_options.update(|current| {
                                     if allow_multiple {
-                                        if current.contains(&option.to_string()) {
-                                            current.retain(|o| o != &option);
+                                        if current.contains(&option) {
+                                            current.retain(|o| *o != option);
                                         } else {
-                                            current.push(option.to_string());
+                                            current.push(option.clone());
                                         }
                                     } else {
-                                        if current.contains(&option.to_string()) {
+                                        if current.contains(&option) {
                                             current.clear();
                                         } else {
                                             current.clear();
-                                            current.push(option.to_string());
+                                            current.push(option.clone());
                                         }
                                     }
                                 });
                             }
                         >
-                            <span class="text-gray-200">{option}</span>
+                            <span class="text-gray-200">{option.clone()}</span>
                             <i class={move || if is_selected() { "icon-check" } else { "" }}></i>
                         </div>
                     }

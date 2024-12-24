@@ -36,8 +36,8 @@ pub fn Dropdown(
             </div>
             <div
                 class={move || format!(
-                    "absolute mt-2 w-full bg-gray-700 border border-gray-600 rounded-lg shadow-lg transition-all duration-200 z-50 {}",
-                    if show_options() { "max-h-60 opacity-100" } else { "max-h-0 opacity-0 pointer-events-none" }
+                    "absolute mt-2 w-full bg-gray-700 border border-gray-600 rounded-lg shadow-lg transition-all duration-200 z-50 overflow-hidden {}",
+                    if show_options() { "max-h-60 opacity-100 overflow-y-auto" } else { "max-h-0 opacity-0" }
                 )}
             >
                 {options.clone().into_iter().map(|option| {
@@ -67,7 +67,7 @@ pub fn Dropdown(
                             }
                         >
                             <span class="text-gray-200">{option.clone()}</span>
-                            <i class={move || if is_selected() { "icon-check" } else { "" }}></i>
+                            <i class={move || if is_selected() { "icon-check text-indigo-500" } else { "" }}></i>
                         </div>
                     }
                 }).collect::<Vec<_>>()}

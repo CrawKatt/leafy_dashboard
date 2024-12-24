@@ -1,25 +1,23 @@
-use std::env;
-use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
+use actix_web::{get, web, HttpRequest, HttpResponse, Responder, Result};
 use reqwest::Client;
-use crate::frontend::components::server_card::{DiscordChannel, DiscordRole, DiscordServer};
+use std::env;
+
 use crate::services::discord::get_user_guilds;
+use crate::api::error::BackEndError;
+use crate::models::guild::{DiscordChannel, DiscordRole, DiscordServer};
 
 #[get("/api/servers")]
-pub async fn get_servers(req: HttpRequest) -> impl Responder {
+pub async fn get_servers(req: HttpRequest) -> Result<impl Responder, BackEndError> {
     let access_token = req
         .cookie("access_token")
         .map(|c| c.value().to_string())
         .unwrap_or_default();
 
     if access_token.is_empty() {
-        return HttpResponse::Unauthorized().body("Access token not found");
+        return Ok(HttpResponse::Unauthorized().body("Access token not found"));
     }
 
-    let user_guilds = get_user_guilds(&access_token).await;
-    let Ok(guilds) = user_guilds else {
-        return HttpResponse::InternalServerError().body("Ocurrió un error al obtener los servidores del usuario")
-    };
-
+    let guilds = get_user_guilds(&access_token).await?;
     let servers: Vec<DiscordServer> = guilds
         .into_iter()
         .filter(|guild| guild.owner || guild.permissions.unwrap_or(0) & 0x8 != 0) // 0x8 = ADMINISTRADOR
@@ -31,7 +29,8 @@ pub async fn get_servers(req: HttpRequest) -> impl Responder {
         })
         .collect();
 
-    HttpResponse::Ok().json(servers)
+    let http_response = HttpResponse::Ok().json(servers);
+    Ok(http_response)
 }
 
 #[get("/api/servers/{guild_id}")]
@@ -63,63 +62,33 @@ pub async fn get_guild_id(
 }
 
 #[get("/api/roles/{guild_id}")]
-pub async fn get_roles(guild_id: web::Path<String>) -> impl Responder {
+pub async fn get_roles(guild_id: web::Path<String>) -> Result<impl Responder, BackEndError> {
     let access_token = env::var("BOT_TOKEN").expect("BOT TOKEN NOT FOUND");
     let guild_id = guild_id.into_inner();
-    let client = Client::new();
-
-    match client
+    let response = Client::new()
         .get(format!("https://discord.com/api/v10/guilds/{guild_id}/roles"))
         .header("Authorization", format!("Bot {}", access_token))
         .send()
-        .await
-    {
-        Ok(response) => {
-            if response.status().is_success() {
-                let roles: Vec<DiscordRole> = match response.json().await {
-                    Ok(roles) => roles,
-                    Err(_) => {
-                        return HttpResponse::InternalServerError().body("Failed to parse roles")
-                    },
-                };
-                HttpResponse::Ok().json(roles)
-            } else {
-                HttpResponse::Unauthorized().body("Failed to fetch roles from Discord")
-            }
-        }
-        Err(_) => {
-            HttpResponse::InternalServerError().body("Request to Discord API failed")
-        }
-    }
+        .await?;
+
+    let channels: Vec<DiscordRole> = response.json().await?;
+    let http_response = HttpResponse::Ok().json(channels);
+
+    Ok(http_response)
 }
 
 #[get("/api/channels/{guild_id}")]
-pub async fn get_channels(guild_id: web::Path<String>) -> impl Responder {
+pub async fn get_channels(guild_id: web::Path<String>) -> Result<impl Responder, BackEndError> {
     let access_token = env::var("BOT_TOKEN").expect("BOT TOKEN NOT FOUND");
     let guild_id = guild_id.into_inner();
-    let client = Client::new();
-
-    match client
+    let response = Client::new()
         .get(format!("https://discord.com/api/v10/guilds/{guild_id}/channels"))
-        .header("Authorization", format!("Bot {}", access_token))
+        .header("Authorization", format!("Bot {access_token}"))
         .send()
-        .await
-    {
-        Ok(response) => {
-            if response.status().is_success() {
-                let channels: Vec<DiscordChannel> = match response.json().await {
-                    Ok(roles) => roles,
-                    Err(_) => {
-                        return HttpResponse::InternalServerError().body("Failed to parse roles")
-                    },
-                };
-                HttpResponse::Ok().json(channels)
-            } else {
-                HttpResponse::Unauthorized().body("Failed to fetch roles from Discord")
-            }
-        }
-        Err(_) => {
-            HttpResponse::InternalServerError().body("Request to Discord API failed")
-        }
-    }
+        .await?;
+
+    let channels: Vec<DiscordChannel> = response.json().await?;
+    let http_response = HttpResponse::Ok().json(channels);
+
+    Ok(http_response)
 }

@@ -1,8 +1,8 @@
 use leptos::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
-
-use crate::frontend::components::server_card::{DiscordServer, ServerCard};
+use crate::models::guild::DiscordServer;
+use crate::frontend::components::server_card::ServerCard;
 
 // LADO DEL SERVIDOR, NO USAR REQWASM NI COSAS CON WASM. UTILIZAR ÚNICAMENTE CÓDIGO NATIVO
 #[component]

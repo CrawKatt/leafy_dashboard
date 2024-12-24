@@ -1,23 +1,22 @@
 use leptos::prelude::*;
-use leptos::prelude::{ReadSignal, RwSignal};
-use crate::models::guild::DiscordRole;
+use crate::models::guild::DiscordUser;
 use crate::frontend::components::card::Card;
 use crate::frontend::components::dropdown::Dropdown;
 
 #[component]
-pub fn RoleDropdown(
+pub fn UserDropdown(
     title: &'static str,
     index: usize,
     allow_multiple: bool,
-    roles: ReadSignal<Vec<DiscordRole>>,
+    users: ReadSignal<Vec<DiscordUser>>,
     active_dropdown: RwSignal<Option<usize>>
 ) -> impl IntoView {
     view! {
         <Card title=title>
-            {move || roles.with(|r| {
+            {move || users.with(|u| {
                 view! {
                     <Dropdown
-                        options={r.iter().map(|role| role.name.clone()).collect::<Vec<String>>()}
+                        options={u.iter().map(|user| user.name.clone()).collect::<Vec<String>>()}
                         index={index}
                         active_dropdown={active_dropdown}
                         allow_multiple={allow_multiple}

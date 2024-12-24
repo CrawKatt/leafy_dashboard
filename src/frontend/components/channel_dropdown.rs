@@ -1,7 +1,7 @@
 use leptos::prelude::*;
+use crate::models::guild::DiscordChannel;
 use crate::frontend::components::card::Card;
 use crate::frontend::components::dropdown::Dropdown;
-use crate::frontend::components::server_card::DiscordChannel;
 
 #[component]
 pub fn ChannelDropdown(

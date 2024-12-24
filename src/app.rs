@@ -13,7 +13,7 @@ pub fn App() -> impl IntoView {
 
     view! {
         <Stylesheet id="leptos" href="/pkg/tailwind_actix.css"/>
-        <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
+        <Link rel="shortcut icon" type_="image/png" href="/favicon.png"/>
         <Router>
             <FlatRoutes fallback=|| "Page not found.">
                 <Route path=path!("") view=Home/>

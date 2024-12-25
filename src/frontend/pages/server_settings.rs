@@ -2,7 +2,7 @@ use crate::frontend::components::header::Header;
 use crate::frontend::components::role_dropdown::RoleDropdown;
 use crate::frontend::components::sidebar::Sidebar;
 use crate::frontend::components::channel_dropdown::ChannelDropdown;
-use crate::frontend::components::loading_indicator::LoadingIndicator;
+use crate::frontend::pages::loading_indicator::LoadingIndicator;
 use crate::frontend::components::text_card::TextCard;
 use crate::models::guild::{DiscordChannel, DiscordRole};
 

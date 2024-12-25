@@ -20,7 +20,7 @@ pub struct DiscordRole {
     pub mentionable: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct DiscordChannel {
     pub id: String,
     pub r#type: u8, // El tipo de canal (0 = texto, 2 = voz, etc.)
@@ -33,7 +33,7 @@ pub struct DiscordChannel {
     pub topic: Option<String>, // Solo para canales de texto
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct PermissionOverwrite {
     pub id: String,
     pub r#type: u8, // 0 = rol, 1 = usuario
@@ -41,11 +41,44 @@ pub struct PermissionOverwrite {
     pub deny: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct DiscordUser {
-    pub name: String,
+    pub avatar: Option<String>,
+    pub banner: Option<String>,
+    pub communication_disabled_until: Option<String>,
+    pub flags: u32,
+    pub joined_at: String,
+    pub nick: Option<String>,
+    pub pending: bool,
+    pub premium_since: Option<String>,
+    pub roles: Vec<String>,
+    pub unusual_dm_activity_until: Option<String>,
+    pub user: User,
+    pub mute: bool,
+    pub deaf: bool,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
+pub struct User {
     pub id: String,
-    pub r#type: u8, // 0 = rol, 1 = usuario
-    pub allow: String,
-    pub deny: String,
+    pub username: String,
+    pub avatar: String,
+    pub discriminator: String,
+    pub public_flags: u32,
+    pub flags: u32,
+    pub bot: Option<bool>, // Este campo es opcional en algunos casos.
+    pub banner: Option<String>,
+    pub accent_color: Option<String>,
+    pub global_name: Option<String>,
+    pub avatar_decoration_data: Option<AvatarDecorationData>, // Ajustado a un substruct
+    pub banner_color: Option<String>,
+    pub clan: Option<String>,          // Campo adicional (si aplica).
+    pub primary_guild: Option<String>, // Campo adicional (si aplica).
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
+pub struct AvatarDecorationData {
+    pub asset: String,
+    pub expires_at: Option<String>, // Campo opcional.
+    pub sku_id: Option<String>,    // Campo opcional.
 }

@@ -4,7 +4,7 @@ use std::env;
 
 use crate::services::discord::get_user_guilds;
 use crate::api::error::BackEndError;
-use crate::models::guild::{DiscordChannel, DiscordRole, DiscordServer};
+use crate::models::guild::{DiscordChannel, DiscordRole, DiscordServer, DiscordUser};
 
 #[get("/api/servers")]
 pub async fn get_servers(req: HttpRequest) -> Result<impl Responder, BackEndError> {
@@ -89,6 +89,23 @@ pub async fn get_channels(guild_id: web::Path<String>) -> Result<impl Responder,
 
     let channels: Vec<DiscordChannel> = response.json().await?;
     let http_response = HttpResponse::Ok().json(channels);
+
+    Ok(http_response)
+}
+
+#[get("/api/users/{guild_id}/{user_target}")]
+pub async fn get_users(path: web::Path<(String, String)>) -> Result<impl Responder, BackEndError> {
+    let access_token = env::var("BOT_TOKEN").expect("BOT TOKEN NOT FOUND");
+    let (guild_id, user_target) = path.into_inner();
+
+    let response = Client::new()
+        .get(format!("https://discord.com/api/v10/guilds/{guild_id}/members/search?query={user_target}"))
+        .header("Authorization", format!("Bot {access_token}"))
+        .send()
+        .await?;
+
+    let users: Vec<DiscordUser> = response.json().await?;
+    let http_response = HttpResponse::Ok().json(users);
 
     Ok(http_response)
 }

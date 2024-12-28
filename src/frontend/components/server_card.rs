@@ -12,28 +12,33 @@ pub fn ServerCard(server: DiscordServer) -> impl IntoView {
 
     view! {
         <div
-            data-key={guild_id.clone()}
-            class="group overflow-hidden border-green-700/30 bg-green-950/30 backdrop-blur-sm transition-colors hover:bg-green-950/50"
+            data-key=guild_id.clone()
+            class="overflow-hidden transition-colors group border-green-700/30 bg-green-950/30 backdrop-blur-sm hover:bg-green-950/50"
         >
             <div class="p-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="relative h-16 w-16 overflow-hidden rounded-full border-2 border-green-600/30 bg-green-800/30">
+                <div class="flex justify-between items-center">
+                    <div class="flex gap-4 items-center">
+                        <div class="overflow-hidden relative w-16 h-16 rounded-full border-2 border-green-600/30 bg-green-800/30">
                             <img
-                                src={icon_url}
-                                alt={server.name.clone()}
+                                src=icon_url
+                                alt=server.name.clone()
                                 class="object-cover transition-transform group-hover:scale-110"
                             />
                         </div>
                         <div>
-                            <h2 class="text-lg font-semibold text-green-50">{server.name.clone()}</h2>
+                            <h2 class="text-lg font-semibold text-green-50">
+                                {server.name.clone()}
+                            </h2>
                             <p class="text-sm text-green-300">{server.owner}</p>
                         </div>
                     </div>
                     <button
-                        class="border border-green-600/30 bg-green-800/30 text-green-50 hover:bg-green-800/50 hover:text-green-100 px-4 py-2 rounded"
+                        class="py-2 px-4 text-green-50 rounded border hover:text-green-100 border-green-600/30 bg-green-800/30 hover:bg-green-800/50"
                         on:click=move |_| {
-                            navigate(format!("/dashboard/{}", guild_id_clone).as_str(), Default::default());
+                            navigate(
+                                format!("/dashboard/{}", guild_id_clone).as_str(),
+                                Default::default(),
+                            );
                         }
                     >
                         "Go"

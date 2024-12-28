@@ -11,17 +11,13 @@ pub fn LoadingIndicator() -> impl IntoView {
     });
 
     view! {
-        <div class="fixed inset-0 flex items-center justify-center bg-gray-800 p-6">
+        <div class="flex fixed inset-0 justify-center items-center p-6 bg-gray-800">
             <div class="flex flex-col items-center">
-                <img
-                    src="/loading.gif"
-                    alt="Loading Indicator"
-                    class="w-42 h-42 mb-4"
-                />
-                <p class="text-white text-lg mb-2">"Loading..."</p>
-                <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <img src="/loading.gif" alt="Loading Indicator" class="mb-4 w-42 h-42" />
+                <p class="mb-2 text-lg text-white">"Loading..."</p>
+                <div class="w-full h-2.5 bg-gray-700 rounded-full">
                     <div
-                        class="bg-blue-500 h-2.5 rounded-full animate-pulse"
+                        class="h-2.5 bg-blue-500 rounded-full animate-pulse"
                         style=move || format!("width: {}%", progress.get())
                     ></div>
                 </div>

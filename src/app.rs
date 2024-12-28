@@ -14,13 +14,13 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Stylesheet id="leptos" href="/pkg/tailwind_actix.css"/>
-        <Link rel="shortcut icon" type_="image/png" href="/favicon.png"/>
+        <Stylesheet id="leptos" href="/pkg/tailwind_actix.css" />
+        <Link rel="shortcut icon" type_="image/png" href="/favicon.png" />
         <Router>
             <FlatRoutes fallback=|| "Page not found.">
-                <Route path=path!("") view=Home/>
-                <Route path=path!("/dashboard") view=Dashboard/>
-                <Route path=path!("/dashboard/:guild_id") view=ServerSettings/>
+                <Route path=path!("") view=Home />
+                <Route path=path!("/dashboard") view=Dashboard />
+                <Route path=path!("/dashboard/:guild_id") view=ServerSettings />
             </FlatRoutes>
         </Router>
     }

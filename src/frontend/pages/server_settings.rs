@@ -4,6 +4,7 @@ use crate::frontend::components::sidebar::Sidebar;
 use crate::frontend::components::channel_dropdown::ChannelDropdown;
 use crate::frontend::pages::loading_indicator::LoadingIndicator;
 use crate::frontend::components::text_card::TextCard;
+use crate::frontend::components::user_dropdown::UserDropdown;
 use crate::models::guild::{DiscordChannel, DiscordRole};
 
 use std::fmt::Debug;
@@ -12,7 +13,6 @@ use leptos_router::hooks::use_params;
 use leptos_router::params::Params;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
-use crate::frontend::components::user_dropdown::UserDropdown;
 
 #[derive(Params, PartialEq)]
 struct DashboardParams {
@@ -37,74 +37,75 @@ pub fn ServerSettings() -> impl IntoView {
     let channels = LocalResource::new(move || fetch_channels(guild_id()));
 
     view! {
-        <Suspense fallback=move || view! { <LoadingIndicator /> }>
+        <Suspense fallback=move || {
+            view! { <LoadingIndicator /> }
+        }>
             {move || Suspend::new(async move {
                 let roles = roles.await;
                 let channels = channels.await;
                 view! {
-                    <div class="flex min-h-screen bg-gray-900 text-white">
+                    <div class="flex min-h-screen text-white bg-gray-900">
                         <Sidebar />
-                        <div class="flex-1 flex flex-col">
+                        <div class="flex flex-col flex-1">
                             <Header title="Bot Configuration" />
-                            <div class="p-6 grid grid-cols-2 gap-6">
+                            <div class="grid grid-cols-2 gap-6 p-6">
                                 <RoleDropdown
                                     title="Admin Roles"
-                                    index={0}
+                                    index=0
                                     allow_multiple=true
                                     roles=roles.clone()
                                     active_dropdown=active_dropdown
                                 />
                                 <RoleDropdown
                                     title="Forbidden Roles"
-                                    index={1}
+                                    index=1
                                     allow_multiple=true
                                     roles=roles
                                     active_dropdown=active_dropdown
                                 />
                                 <ChannelDropdown
                                     title="Timeout Duration"
-                                    index={2}
+                                    index=2
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
                                 />
                                 <ChannelDropdown
                                     title="Welcome Channel"
-                                    index={3}
+                                    index=3
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
                                 />
                                 <ChannelDropdown
                                     title="Logs Channel"
-                                    index={4}
+                                    index=4
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
                                 />
                                 <ChannelDropdown
                                     title="Exceptions Channel"
-                                    index={5}
+                                    index=5
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
                                 />
                                 <ChannelDropdown
                                     title="OOC Channel"
-                                    index={6}
+                                    index=6
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
                                 />
                                 <UserDropdown
                                     title="Forbidden User"
-                                    index={7}
-                                    allow_multiple=false
+                                    index=7
                                     guild_id=guild_id()
                                     active_dropdown=active_dropdown
                                 />
                             </div>
-                            <div class="p-6 grid grid-cols-2 gap-6">
+                            <div class="grid grid-cols-2 gap-6 p-6">
                                 <TextCard
                                     title="Warn Message"
                                     placeholder="Tu mensaje aquí"

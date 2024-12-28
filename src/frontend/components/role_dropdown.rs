@@ -14,16 +14,19 @@ pub fn RoleDropdown(
 ) -> impl IntoView {
     view! {
         <Card title=title>
-            {move ||
+            {move || {
                 view! {
                     <Dropdown
-                        options={roles.iter().map(|role| role.name.clone()).collect::<Vec<String>>()}
-                        index={index}
-                        active_dropdown={active_dropdown}
-                        allow_multiple={allow_multiple}
+                        options={roles
+                            .iter()
+                            .map(|role| role.name.clone())
+                            .collect::<Vec<String>>()}
+                        index=index
+                        active_dropdown=active_dropdown
+                        allow_multiple=allow_multiple
                     />
                 }
-            }
+            }}
         </Card>
     }
 }

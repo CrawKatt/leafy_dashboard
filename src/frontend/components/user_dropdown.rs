@@ -24,13 +24,14 @@ pub fn UserDropdown(
             <div
                 class="flex justify-between items-center p-3 w-full bg-gray-700 rounded-lg border border-gray-600 cursor-pointer hover:border-indigo-500"
                 on:click=move |_| {
-                    active_dropdown.update(|active| {
-                        if *active == Some(index) {
-                            *active = None;
-                        } else {
-                            *active = Some(index);
-                        }
-                    });
+                    active_dropdown
+                        .update(|active| {
+                            if *active == Some(index) {
+                                *active = None;
+                            } else {
+                                *active = Some(index);
+                            }
+                        });
                 }
             >
                 <span class="text-gray-200">
@@ -53,7 +54,7 @@ pub fn UserDropdown(
                         "max-h-30 opacity-100 overflow-y-auto"
                     } else {
                         "max-h-0 opacity-0"
-                    }
+                    },
                 )
             }>
                 <div class="p-3">
@@ -67,7 +68,7 @@ pub fn UserDropdown(
                         }
                     />
                 </div>
-                <div class="h-64 overflow-y-auto p-3">
+                <div class="overflow-y-auto p-3 h-64">
                     <Suspense fallback=move || {
                         view! { <p class="text-gray-400">"Cargando usuarios..."</p> }
                     }>
@@ -84,25 +85,32 @@ pub fn UserDropdown(
                                         .into_iter()
                                         .map(|name| {
                                             let name_clone = name.clone();
-                                            let is_selected = move || selected_options.get().contains(&name_clone);
+                                            let is_selected = move || {
+                                                selected_options.get().contains(&name_clone)
+                                            };
 
                                             view! {
                                                 <div
-                                                    class="flex justify-between items-center p-3 cursor-pointer hover:bg-gray-600 rounded"
+                                                    class="flex justify-between items-center p-3 rounded cursor-pointer hover:bg-gray-600"
                                                     on:click=move |_| {
-                                                        set_selected_options.update(|current| {
-                                                            if current.contains(&name) {
-                                                                current.clear();
-                                                            } else {
-                                                                current.clear();
-                                                                current.push(name.clone());
-                                                            }
-                                                        });
+                                                        set_selected_options
+                                                            .update(|current| {
+                                                                if current.contains(&name) {
+                                                                    current.clear();
+                                                                } else {
+                                                                    current.clear();
+                                                                    current.push(name.clone());
+                                                                }
+                                                            });
                                                     }
                                                 >
                                                     <span class="text-gray-200">{name.clone()}</span>
                                                     <i class=move || {
-                                                        if is_selected() { "icon-check text-indigo-500" } else { "" }
+                                                        if is_selected() {
+                                                            "icon-check text-indigo-500"
+                                                        } else {
+                                                            ""
+                                                        }
                                                     }></i>
                                                 </div>
                                             }

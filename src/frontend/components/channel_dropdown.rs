@@ -17,10 +17,10 @@ pub fn ChannelDropdown(
             {
                 view! {
                     <Dropdown
-                        options={channel}
-                        index={index}
-                        active_dropdown={active_dropdown}
-                        allow_multiple={allow_multiple}
+                        options=channel
+                        index=index
+                        active_dropdown=active_dropdown
+                        allow_multiple=allow_multiple
                     />
                 }
             }

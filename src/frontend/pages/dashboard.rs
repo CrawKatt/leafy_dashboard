@@ -33,18 +33,20 @@ pub fn Dashboard() -> impl IntoView {
 
     view! {
         <div class="min-h-screen bg-gradient-to-b from-green-900 via-green-800 to-green-900">
-            <div class="mx-auto max-w-6xl p-6">
+            <div class="p-6 mx-auto max-w-6xl">
                 <div class="mb-8 text-center">
                     <h1 class="mb-4 text-4xl font-bold text-green-50">"Select a server"</h1>
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {move || {
-                        servers.get().iter().map(|server| {
-                            view! {
-                                <ServerCard server=server.clone() />
-                            }
-                        }).collect::<Vec<_>>()
+                        servers
+                            .get()
+                            .iter()
+                            .map(|server| {
+                                view! { <ServerCard server=server.clone() /> }
+                            })
+                            .collect::<Vec<_>>()
                     }}
                 </div>
             </div>

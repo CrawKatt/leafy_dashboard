@@ -7,10 +7,10 @@ pub fn TextCard(
     on_change: WriteSignal<String>
 ) -> impl IntoView {
     view! {
-        <div class="p-4 border border-gray-600 rounded-lg bg-gray-700 shadow-md">
-            <h2 class="text-lg font-bold text-gray-200 mb-2">{title}</h2>
+        <div class="p-4 bg-gray-700 rounded-lg border border-gray-600 shadow-md">
+            <h2 class="mb-2 text-lg font-bold text-gray-200">{title}</h2>
             <textarea
-                class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-gray-200 resize-none focus:outline-none focus:ring focus:ring-indigo-500"
+                class="p-3 w-full text-gray-200 bg-gray-800 rounded-lg border border-gray-600 resize-none focus:ring focus:ring-indigo-500 focus:outline-none"
                 rows="4"
                 placeholder=placeholder
                 on:input=move |e| {

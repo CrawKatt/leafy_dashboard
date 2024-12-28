@@ -47,85 +47,87 @@ pub fn UserDropdown(
                     if show_options() { "icon-chevron-up" } else { "icon-chevron-down" }
                 }></i>
             </div>
-            <div class=move || {
-                format!(
-                    "w-full bg-gray-700 border border-gray-600 rounded-lg shadow-lg z-50 transition-opacity duration-200 overflow-hidden {}",
-                    if show_options() {
-                        "max-h-30 opacity-100 overflow-y-auto"
-                    } else {
-                        "max-h-0 opacity-0"
-                    },
-                )
-            }>
-                <div class="p-3">
-                    <input
-                        type="text"
-                        class="py-2 px-3 w-full text-gray-200 bg-gray-600 rounded"
-                        placeholder="Search..."
-                        on:input=move |ev| {
-                            let input = event_target_value(&ev);
-                            set_search_term.set(input);
-                        }
-                    />
-                </div>
-                <div class="overflow-y-auto p-3 h-64">
-                    <Suspense fallback=move || {
-                        view! { <p class="text-gray-400">"Cargando usuarios..."</p> }
-                    }>
-                        {move || Suspend::new(async move {
-                            let users = users.await;
-                            let user_names = users
-                                .iter()
-                                .map(|u| u.user.username.clone())
-                                .collect::<Vec<String>>();
-
-                            view! {
-                                <div>
-                                    {user_names
-                                        .into_iter()
-                                        .map(|name| {
-                                            let name_clone = name.clone();
-                                            let is_selected = move || {
-                                                selected_options.get().contains(&name_clone)
-                                            };
-
-                                            view! {
-                                                <div
-                                                    class="flex justify-between items-center p-3 rounded cursor-pointer hover:bg-gray-600"
-                                                    on:click=move |_| {
-                                                        set_selected_options
-                                                            .update(|current| {
-                                                                if current.contains(&name) {
-                                                                    current.clear();
-                                                                } else {
-                                                                    current.clear();
-                                                                    current.push(name.clone());
-                                                                }
-                                                            });
-                                                    }
-                                                >
-                                                    <span class="text-gray-200">{name.clone()}</span>
-                                                    <i class=move || {
-                                                        if is_selected() {
-                                                            "icon-check text-indigo-500"
-                                                        } else {
-                                                            ""
-                                                        }
-                                                    }></i>
-                                                </div>
-                                            }
-                                        })
-                                        .collect::<Vec<_>>()}
-                                </div>
+            <div class="relative">
+                <div class=move || {
+                    format!(
+                        "absolute w-full bg-gray-700 border border-gray-600 rounded-lg shadow-lg z-50 transition-transform duration-200 overflow-hidden {}",
+                        if show_options() {
+                            "translate-y-0 opacity-100 max-h-60"
+                        } else {
+                            "-translate-y-4 opacity-0 max-h-0"
+                        },
+                    )
+                }>
+                    <div class="p-3">
+                        <input
+                            type="text"
+                            class="py-2 px-3 w-full text-gray-200 bg-gray-600 rounded"
+                            placeholder="Search..."
+                            on:input=move |ev| {
+                                let input = event_target_value(&ev);
+                                set_search_term.set(input);
                             }
-                        })}
-                    </Suspense>
+                        />
+                    </div>
+                    <div class="overflow-y-auto p-3 h-64">
+                        <Suspense fallback=move || {
+                            view! { <p class="text-gray-400">"Cargando usuarios..."</p> }
+                        }>
+                            {move || Suspend::new(async move {
+                                let users = users.await;
+                                let user_names = users
+                                    .iter()
+                                    .map(|u| u.user.username.clone())
+                                    .collect::<Vec<String>>();
+
+                                view! {
+                                    <div>
+                                        {user_names
+                                            .into_iter()
+                                            .map(|name| {
+                                                let name_clone = name.clone();
+                                                let is_selected = move || {
+                                                    selected_options.get().contains(&name_clone)
+                                                };
+
+                                                view! {
+                                                    <div
+                                                        class="flex justify-between items-center p-3 rounded cursor-pointer hover:bg-gray-600"
+                                                        on:click=move |_| {
+                                                            set_selected_options
+                                                                .update(|current| {
+                                                                    if current.contains(&name) {
+                                                                        current.clear();
+                                                                    } else {
+                                                                        current.clear();
+                                                                        current.push(name.clone());
+                                                                    }
+                                                                });
+                                                        }
+                                                    >
+                                                        <span class="text-gray-200">{name.clone()}</span>
+                                                        <i class=move || {
+                                                            if is_selected() {
+                                                                "icon-check text-indigo-500"
+                                                            } else {
+                                                                ""
+                                                            }
+                                                        }></i>
+                                                    </div>
+                                                }
+                                            })
+                                            .collect::<Vec<_>>()}
+                                    </div>
+                                }
+                            })}
+                        </Suspense>
+                    </div>
                 </div>
             </div>
         </Card>
     }
-}
 
+}
 
 async fn fetch_users(guild_id: String, target_user: String) -> Vec<DiscordUser> {
     if target_user.is_empty() {

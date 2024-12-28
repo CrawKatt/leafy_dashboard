@@ -1,33 +1,23 @@
-use actix_web::{get, HttpRequest, HttpResponse, Responder};
-use crate::frontend::components::server_card::Server;
-use crate::services::discord::get_user_guilds;
+use actix_web::{get, web, HttpResponse, Responder, Result};
+use reqwest::Client;
+use std::env;
 
-#[get("/api/servers")]
-pub async fn get_servers(req: HttpRequest) -> impl Responder {
-    let access_token = req
-        .cookie("access_token")
-        .map(|c| c.value().to_string())
-        .unwrap_or_default();
+use crate::api::error::BackEndError;
+use crate::models::guild::DiscordUser;
 
-    if access_token.is_empty() {
-        return HttpResponse::Unauthorized().body("Access token not found");
-    }
+#[get("/api/users/{guild_id}/{user_target}")]
+pub async fn get_users(path: web::Path<(String, String)>) -> Result<impl Responder, BackEndError> {
+    let access_token = env::var("BOT_TOKEN").expect("BOT TOKEN NOT FOUND");
+    let (guild_id, user_target) = path.into_inner();
 
-    match get_user_guilds(&access_token).await {
-        Ok(guilds) => {
-            // Transforma Guild a Server
-            let servers: Vec<Server> = guilds
-                .into_iter()
-                .map(|guild| Server {
-                    id: guild.id.clone(),
-                    name: guild.name,
-                    owner: if guild.owner { "Owner".to_string() } else { "Member".to_string() },
-                    icon: guild.icon.map(|icon| format!("https://cdn.discordapp.com/icons/{}/{}.png", guild.id, icon)),
-                })
-                .collect();
+    let response = Client::new()
+        .get(format!("https://discord.com/api/v10/guilds/{guild_id}/members/search?query={user_target}"))
+        .header("Authorization", format!("Bot {access_token}"))
+        .send()
+        .await?;
 
-            HttpResponse::Ok().json(servers)
-        }
-        Err(err) => HttpResponse::InternalServerError().body(format!("Error: {}", err)),
-    }
+    let users: Vec<DiscordUser> = response.json().await?;
+    let http_response = HttpResponse::Ok().json(users);
+
+    Ok(http_response)
 }

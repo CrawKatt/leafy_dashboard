@@ -30,7 +30,7 @@ pub struct DiscordChannel {
     pub position: i32,
     pub permission_overwrites: Vec<PermissionOverwrite>,
     pub nsfw: Option<bool>,
-    pub topic: Option<String>, // Solo para canales de texto
+    pub topic: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
@@ -66,19 +66,19 @@ pub struct User {
     pub discriminator: String,
     pub public_flags: u32,
     pub flags: u32,
-    pub bot: Option<bool>, // Este campo es opcional en algunos casos.
+    pub bot: Option<bool>,
     pub banner: Option<String>,
     pub accent_color: Option<String>,
     pub global_name: Option<String>,
-    pub avatar_decoration_data: Option<AvatarDecorationData>, // Ajustado a un substruct
+    pub avatar_decoration_data: Option<AvatarDecorationData>,
     pub banner_color: Option<String>,
-    pub clan: Option<String>,          // Campo adicional (si aplica).
-    pub primary_guild: Option<String>, // Campo adicional (si aplica).
+    pub clan: Option<String>,
+    pub primary_guild: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct AvatarDecorationData {
     pub asset: String,
-    pub expires_at: Option<String>, // Campo opcional.
-    pub sku_id: Option<String>,    // Campo opcional.
+    pub expires_at: Option<String>,
+    pub sku_id: Option<String>,
 }

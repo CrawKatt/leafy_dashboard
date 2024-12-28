@@ -5,7 +5,7 @@ mod services;
 mod models;
 mod api; // NO IMPORTAR LOS MÓDULOS DEL BACKEND EN lib.rs
 
-use crate::api::user::{get_channels, get_guild_id, get_roles, get_servers, get_users};
+use crate::api::user::get_users;
 use crate::app::*;
 use actix_files::Files;
 use actix_web::*;
@@ -14,6 +14,9 @@ use leptos::prelude::*;
 use leptos_actix::{generate_route_list, LeptosRoutes};
 use leptos_meta::MetaTags;
 use crate::api::auth::{auth_callback, auth_redirect};
+use crate::api::channel::get_channels;
+use crate::api::guild::{get_guild_id, get_servers};
+use crate::api::role::get_roles;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

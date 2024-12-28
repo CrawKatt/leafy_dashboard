@@ -6,8 +6,8 @@ use oauth2::{AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, Redi
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-pub struct AuthQuery {
-    pub code: Option<String>,
+struct AuthQuery {
+    code: Option<String>,
 }
 
 #[get("/api/auth")]

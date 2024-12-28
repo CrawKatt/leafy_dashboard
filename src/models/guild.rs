@@ -8,6 +8,17 @@ pub struct DiscordServer {
     pub icon: Option<String>,
 }
 
+impl DiscordServer {
+    pub const fn new(guild_id: String, name: String, owner: String, icon: Option<String>) -> Self {
+        Self {
+            guild_id,
+            name,
+            owner,
+            icon
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct DiscordRole {
     pub id: String,

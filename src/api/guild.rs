@@ -45,15 +45,12 @@ pub async fn get_guild_id(
     }
 
     let guild_id = guild_id.into_inner();
-    let server = DiscordServer {
-        guild_id: guild_id.clone(),
-        name: format!("Server {}", guild_id),
-        owner: "Owner".to_string(),
-        icon: Some(format!(
-            "https://cdn.discordapp.com/icons/{}/default.png",
-            guild_id
-        )),
-    };
+    let server = DiscordServer::new(
+        guild_id.clone(),
+        format!("Server {guild_id}"),
+        "Owner".to_string(),
+        Some(format!("https://cdn.discordapp.com/icons/{guild_id}/default.png"))
+    );
 
     HttpResponse::Ok().json(server)
 }

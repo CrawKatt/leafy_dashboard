@@ -4998,6 +4998,7 @@ dependencies = [
  "oauth2",
  "reqwest 0.11.27",
  "serde",
+ "serde_json",
  "surrealdb",
  "thiserror 2.0.9",
  "wasm-bindgen",

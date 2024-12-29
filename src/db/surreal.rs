@@ -1,16 +1,18 @@
-use surrealdb::engine::remote::ws::{Client, Ws};
+use std::sync::LazyLock;
+use surrealdb::engine::remote::ws::{Client as SurrealClient, Ws};
 use surrealdb::opt::auth::Root;
 use surrealdb::Surreal;
-use surrealdb::Result as SurrealResult;
 
-pub async fn setup_db() -> SurrealResult<Surreal<Client>> {
-    let db = Surreal::new::<Ws>("0.0.0.0:8000").await?;
-    db.connect::<Ws>("0.0.0.0:8000").await?;
-    db.signin(Root {
+pub static DB: LazyLock<Surreal<SurrealClient>> = LazyLock::new(Surreal::init);
+
+pub async fn setup_db() {
+    let database_password = dotenv::var("DATABASE_PASSWORD").expect("MISSING SURREAL_PASSWORD");
+    DB.connect::<Ws>("0.0.0.0:8000").await.unwrap_or_else(|why| {
+        panic!("Could not connect to database: {why}")
+    });
+
+    DB.signin(Root {
         username: "root",
-        password: "061020",
-    }).await?;
-
-    db.use_ns("dashboard-namespace").use_db("dashboard").await?;
-    Ok(db)
+        password: &database_password
+    }).await.expect("Could not sign in");
 }

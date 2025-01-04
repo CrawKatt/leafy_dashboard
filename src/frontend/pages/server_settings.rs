@@ -5,6 +5,7 @@ use crate::frontend::components::channel_dropdown::ChannelDropdown;
 use crate::frontend::pages::loading_indicator::LoadingIndicator;
 use crate::frontend::components::text_card::TextCard;
 use crate::frontend::components::user_dropdown::UserDropdown;
+use crate::frontend::components::save_changes_button::SaveChangesButton;
 use crate::models::guild::{DiscordChannel, DiscordRole};
 
 use std::fmt::Debug;
@@ -15,8 +16,8 @@ use reqwest::Client;
 use serde::de::DeserializeOwned;
 
 #[derive(Params, PartialEq)]
-struct DashboardParams {
-    guild_id: Option<String>
+pub struct DashboardParams {
+    pub guild_id: Option<String>
 }
 
 #[component]
@@ -30,7 +31,17 @@ pub fn ServerSettings() -> impl IntoView {
         .and_then(|params| params.guild_id.clone())
         .unwrap_or_default();
 
-    let (_message, set_message) = signal(String::new());
+    let (admin_roles, _set_admin_roles) = signal(vec![String::new()]);
+    let (forbidden_user, _set_forbidden_user) = signal(String::new());
+    let (forbidden_role, _set_forbidden_role) = signal(String::new());
+    let (timeout_time, _set_timeout_time) = signal(String::new());
+    let (welcome_channel, _set_welcome_channel) = signal(String::new());
+    let (ooc_channel, _set_ooc_channel) = signal(String::new());
+    let (logs_channel, _set_logs_channel) = signal(String::new());
+    let (exceptions_channel, _set_exceptions_channel) = signal(String::new());
+    let (welcome_message, set_welcome_message) = signal(String::new());
+    let (timeout_message, set_timeout_message) = signal(String::new());
+    let (warn_message, set_warn_message) = signal(String::new());
 
     // Para obtener datos desde la API utilizar `LocalResource` y `<Suspense>` dentro del `view!`
     let roles = LocalResource::new(move || fetch_roles(guild_id()));
@@ -109,19 +120,33 @@ pub fn ServerSettings() -> impl IntoView {
                                 <TextCard
                                     title="Warn Message"
                                     placeholder="Tu mensaje aquí"
-                                    on_change=set_message
+                                    on_change=set_warn_message
                                 />
                                 <TextCard
                                     title="Timeout Message"
                                     placeholder="Tu mensaje aquí"
-                                    on_change=set_message
+                                    on_change=set_timeout_message
                                 />
                                 <TextCard
                                     title="Welcome Message"
                                     placeholder="Tu mensaje aquí"
-                                    on_change=set_message
+                                    on_change=set_welcome_message
                                 />
                             </div>
+                            <SaveChangesButton
+                                admin_roles=admin_roles
+                                guild_id=guild_id()
+                                forbidden_user=forbidden_user
+                                timeout_time=timeout_time
+                                forbidden_role=forbidden_role
+                                welcome_channel=welcome_channel
+                                logs_channel=logs_channel
+                                exceptions_channel=exceptions_channel
+                                ooc_channel=ooc_channel
+                                warn_message=warn_message
+                                timeout_message=timeout_message
+                                welcome_message=welcome_message
+                            />
                         </div>
                     </div>
                 }

@@ -1,33 +1,49 @@
+use leptos::logging::log;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
 
 #[component]
-pub fn SaveChangesButton() -> impl IntoView {
+pub fn SaveChangesButton(
+    admin_roles: ReadSignal<Vec<String>>,
+    guild_id: String,
+    forbidden_user: ReadSignal<String>,
+    forbidden_role: ReadSignal<String>,
+    timeout_time: ReadSignal<String>,
+    welcome_channel: ReadSignal<String>,
+    ooc_channel: ReadSignal<String>,
+    logs_channel: ReadSignal<String>,
+    exceptions_channel: ReadSignal<String>,
+    welcome_message: ReadSignal<String>,
+    timeout_message: ReadSignal<String>,
+    warn_message: ReadSignal<String>
+) -> impl IntoView {
     let save_settings = move |_| {
         let data_to_save = serde_json::json!({
             "admins": {
-                "role": ["9876543210", "1234567890"]
+                "role": admin_roles.get()
             },
-            "guild_id": "1056242001340809298",
+            "guild_id": guild_id,
             "forbidden": {
-                "user": "1234567890",
-                "role": "9876543210"
+                "user": forbidden_user.get(),
+                "role": forbidden_role.get()
             },
             "time_out": {
-                "time": "1 week"
+                "time": timeout_time.get()
             },
             "channels": {
-                "welcome": "1234567890",
-                "ooc": "9876543210",
-                "logs": "1234567890",
-                "exceptions": "9876543210"
+                "welcome": welcome_channel.get(),
+                "ooc": ooc_channel.get(),
+                "logs": logs_channel.get(),
+                "exceptions": exceptions_channel.get()
             },
             "messages": {
-                "welcome": "Welcome message",
-                "time_out": "Timeout message",
-                "warn": "Warn message"
+                "welcome": welcome_message.get(),
+                "time_out": timeout_message.get(),
+                "warn": warn_message.get()
             }
         });
+
+        log!("Datos para enviar: {:#?}", data_to_save);
 
         spawn_local(async move {
             let client = reqwest::Client::new();

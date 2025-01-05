@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use surrealdb::RecordId;
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct DiscordServer {
@@ -92,4 +93,60 @@ pub struct AvatarDecorationData {
     pub asset: String,
     pub expires_at: Option<String>,
     pub sku_id: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct GuildData {
+    pub admins: Admin,
+    pub guild_id: String,
+    pub id: Option<RecordId>,
+    pub forbidden: Forbidden,
+    pub time_out: TimeOut,
+    pub channels: Channels,
+    pub messages: Messages,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Admin {
+    pub role: Vec<String>
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Forbidden {
+    pub user: String,
+    pub role: String
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TimeOut {
+    pub time: String
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Channels {
+    pub welcome: String,
+    pub ooc: String,
+    pub logs: String,
+    pub exceptions: String
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Messages {
+    pub welcome: String,
+    pub time_out: String,
+    pub warn: String
+}
+
+#[allow(dead_code)]
+pub trait Getter {
+    fn to_guild_id(&self) -> String;
+}
+
+impl Getter for RecordId {
+    fn to_guild_id(&self) -> String {
+        self.key()
+            .to_string()
+            .trim_matches(|c| c == '⟨' || c == '⟩')
+            .to_string()
+    }
 }

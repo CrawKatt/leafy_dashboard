@@ -11,6 +11,7 @@ pub fn UserDropdown(
     index: usize,
     guild_id: String,
     active_dropdown: RwSignal<Option<usize>>,
+    on_change: Callback<Vec<String>>
 ) -> impl IntoView {
     let (selected_options, set_selected_options) = signal(vec![]);
     let (search_term, set_search_term) = signal(String::new());
@@ -102,6 +103,7 @@ pub fn UserDropdown(
                                                                         current.clear();
                                                                         current.push(name.clone());
                                                                     }
+                                                                    on_change.run(current.clone());
                                                                 });
                                                         }
                                                     >

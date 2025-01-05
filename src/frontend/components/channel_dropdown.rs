@@ -9,7 +9,8 @@ pub fn ChannelDropdown(
     index: usize,
     allow_multiple: bool,
     channels: Vec<DiscordChannel>,
-    active_dropdown: RwSignal<Option<usize>>
+    active_dropdown: RwSignal<Option<usize>>,
+    on_change: Callback<Vec<String>>
 ) -> impl IntoView {
     let channel = channels.iter().map(|channel| channel.name.clone()).collect::<Vec<String>>();
     view! {
@@ -21,6 +22,11 @@ pub fn ChannelDropdown(
                         index=index
                         active_dropdown=active_dropdown
                         allow_multiple=allow_multiple
+                        on_change=Callback::new(move |selected: Vec<String>| {
+                            if let Some(channel) = selected.first().cloned() {
+                                on_change.run(vec![channel]);
+                            }
+                        })
                     />
                 }
             }

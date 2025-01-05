@@ -14,6 +14,7 @@ use leptos_router::hooks::use_params;
 use leptos_router::params::Params;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
+use crate::frontend::global_state::GlobalState;
 
 #[derive(Params, PartialEq)]
 pub struct DashboardParams {
@@ -22,6 +23,7 @@ pub struct DashboardParams {
 
 #[component]
 pub fn ServerSettings() -> impl IntoView {
+    let global_state: GlobalState = use_context().unwrap();
     let active_dropdown = RwSignal::new(None);
     let params = use_params::<DashboardParams>();
     let guild_id = move || params
@@ -30,18 +32,6 @@ pub fn ServerSettings() -> impl IntoView {
         .ok()
         .and_then(|params| params.guild_id.clone())
         .unwrap_or_default();
-
-    let (admin_roles, _set_admin_roles) = signal(vec![String::new()]);
-    let (forbidden_user, _set_forbidden_user) = signal(String::new());
-    let (forbidden_role, _set_forbidden_role) = signal(String::new());
-    let (timeout_time, _set_timeout_time) = signal(String::new());
-    let (welcome_channel, _set_welcome_channel) = signal(String::new());
-    let (ooc_channel, _set_ooc_channel) = signal(String::new());
-    let (logs_channel, _set_logs_channel) = signal(String::new());
-    let (exceptions_channel, _set_exceptions_channel) = signal(String::new());
-    let (welcome_message, set_welcome_message) = signal(String::new());
-    let (timeout_message, set_timeout_message) = signal(String::new());
-    let (warn_message, set_warn_message) = signal(String::new());
 
     // Para obtener datos desde la API utilizar `LocalResource` y `<Suspense>` dentro del `view!`
     let roles = LocalResource::new(move || fetch_roles(guild_id()));
@@ -66,6 +56,7 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=true
                                     roles=roles.clone()
                                     active_dropdown=active_dropdown
+                                    on_change=Callback::new(move |roles| global_state.admin_roles.set(roles)) // Este si es vector
                                 />
                                 <RoleDropdown
                                     title="Forbidden Roles"
@@ -73,6 +64,11 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=true
                                     roles=roles
                                     active_dropdown=active_dropdown
+                                    on_change= Callback::new(move |roles: Vec<String>| {
+                                        if let Some(role) = roles.first() {
+                                            global_state.forbidden_role.set(role.clone());
+                                        }
+                                    })
                                 />
                                 <ChannelDropdown
                                     title="Timeout Duration"
@@ -80,6 +76,12 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
+                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                        // TODO: Cambiar por TimeOut Duration
+                                        if let Some(channel) = channels.first() {
+                                            global_state.forbidden_role.set(channel.clone());
+                                        }
+                                    })
                                 />
                                 <ChannelDropdown
                                     title="Welcome Channel"
@@ -87,6 +89,11 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
+                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                        if let Some(channel) = channels.first() {
+                                            global_state.welcome_channel.set(channel.clone());
+                                        }
+                                    })
                                 />
                                 <ChannelDropdown
                                     title="Logs Channel"
@@ -94,6 +101,11 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
+                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                        if let Some(channel) = channels.first() {
+                                            global_state.logs_channel.set(channel.clone());
+                                        }
+                                    })
                                 />
                                 <ChannelDropdown
                                     title="Exceptions Channel"
@@ -101,6 +113,11 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
+                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                        if let Some(channel) = channels.first() {
+                                            global_state.exceptions_channel.set(channel.clone());
+                                        }
+                                    })
                                 />
                                 <ChannelDropdown
                                     title="OOC Channel"
@@ -108,44 +125,54 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
+                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                        if let Some(channel) = channels.first() {
+                                            global_state.ooc_channel.set(channel.clone());
+                                        }
+                                    })
                                 />
                                 <UserDropdown
                                     title="Forbidden User"
                                     index=7
                                     guild_id=guild_id()
                                     active_dropdown=active_dropdown
+                                    on_change= Callback::new(move |users: Vec<String>| {
+                                        if let Some(user) = users.first() {
+                                            global_state.forbidden_user.set(user.clone());
+                                        }
+                                    })
                                 />
                             </div>
                             <div class="grid grid-cols-2 gap-6 p-6">
                                 <TextCard
                                     title="Warn Message"
                                     placeholder="Tu mensaje aquí"
-                                    on_change=set_warn_message
+                                    on_change=global_state.warn_message
                                 />
                                 <TextCard
                                     title="Timeout Message"
                                     placeholder="Tu mensaje aquí"
-                                    on_change=set_timeout_message
+                                    on_change=global_state.timeout_message
                                 />
                                 <TextCard
                                     title="Welcome Message"
                                     placeholder="Tu mensaje aquí"
-                                    on_change=set_welcome_message
+                                    on_change=global_state.welcome_message
                                 />
                             </div>
                             <SaveChangesButton
-                                admin_roles=admin_roles
+                                admin_roles=global_state.admin_roles
                                 guild_id=guild_id()
-                                forbidden_user=forbidden_user
-                                timeout_time=timeout_time
-                                forbidden_role=forbidden_role
-                                welcome_channel=welcome_channel
-                                logs_channel=logs_channel
-                                exceptions_channel=exceptions_channel
-                                ooc_channel=ooc_channel
-                                warn_message=warn_message
-                                timeout_message=timeout_message
-                                welcome_message=welcome_message
+                                forbidden_user=global_state.forbidden_user
+                                timeout_time=global_state.timeout_time
+                                forbidden_role=global_state.forbidden_role
+                                welcome_channel=global_state.welcome_channel
+                                logs_channel=global_state.logs_channel
+                                exceptions_channel=global_state.exceptions_channel
+                                ooc_channel=global_state.ooc_channel
+                                warn_message=global_state.warn_message
+                                timeout_message=global_state.timeout_message
+                                welcome_message=global_state.welcome_message
                             />
                         </div>
                     </div>

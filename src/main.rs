@@ -25,7 +25,6 @@ use crate::db::surreal::setup_db;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-
     setup_db().await;
 
     let conf = get_configuration(None).unwrap();

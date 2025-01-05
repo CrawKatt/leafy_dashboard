@@ -10,7 +10,8 @@ pub fn RoleDropdown(
     index: usize,
     allow_multiple: bool,
     roles: Vec<DiscordRole>,
-    active_dropdown: RwSignal<Option<usize>>
+    active_dropdown: RwSignal<Option<usize>>,
+    on_change: Callback<Vec<String>>
 ) -> impl IntoView {
     view! {
         <Card title=title>
@@ -24,6 +25,7 @@ pub fn RoleDropdown(
                         index=index
                         active_dropdown=active_dropdown
                         allow_multiple=allow_multiple
+                        on_change=on_change
                     />
                 }
             }}

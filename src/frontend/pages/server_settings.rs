@@ -50,7 +50,7 @@ pub fn ServerSettings() -> impl IntoView {
                     "10 Minutos".to_string(),
                     "1 Hora".to_string(),
                     "1 Día".to_string(),
-                    "1 Semana".to_string()
+                    "1 Semana".to_string(),
                 ];
                 view! {
                     <div class="flex min-h-screen text-white bg-gray-900">
@@ -64,7 +64,9 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=true
                                     roles=roles.clone()
                                     active_dropdown=active_dropdown
-                                    on_change=Callback::new(move |roles| global_state.admin_roles.set(roles)) // Este si es vector
+                                    on_change=Callback::new(move |roles| {
+                                        global_state.admin_roles.set(roles)
+                                    })
                                 />
                                 <RoleDropdown
                                     title="Forbidden Roles"
@@ -72,7 +74,7 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=true
                                     roles=roles
                                     active_dropdown=active_dropdown
-                                    on_change= Callback::new(move |roles: Vec<String>| {
+                                    on_change=Callback::new(move |roles: Vec<String>| {
                                         if let Some(role) = roles.first() {
                                             global_state.forbidden_role.set(role.clone());
                                         }
@@ -85,7 +87,7 @@ pub fn ServerSettings() -> impl IntoView {
                                     duration=timeout_duration
                                     active_dropdown=active_dropdown
                                     on_change=Callback::new(move |durations: Vec<String>| {
-                                    if let Some(duration_in_seconds) = durations.first() {
+                                        if let Some(duration_in_seconds) = durations.first() {
                                             global_state.timeout_time.set(duration_in_seconds.clone());
                                         }
                                     })
@@ -96,7 +98,7 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
-                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                    on_change=Callback::new(move |channels: Vec<String>| {
                                         if let Some(channel) = channels.first() {
                                             global_state.welcome_channel.set(channel.clone());
                                         }
@@ -108,7 +110,7 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
-                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                    on_change=Callback::new(move |channels: Vec<String>| {
                                         if let Some(channel) = channels.first() {
                                             global_state.logs_channel.set(channel.clone());
                                         }
@@ -120,7 +122,7 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
-                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                    on_change=Callback::new(move |channels: Vec<String>| {
                                         if let Some(channel) = channels.first() {
                                             global_state.exceptions_channel.set(channel.clone());
                                         }
@@ -132,7 +134,7 @@ pub fn ServerSettings() -> impl IntoView {
                                     allow_multiple=false
                                     channels=channels.clone()
                                     active_dropdown=active_dropdown
-                                    on_change= Callback::new(move |channels: Vec<String>| {
+                                    on_change=Callback::new(move |channels: Vec<String>| {
                                         if let Some(channel) = channels.first() {
                                             global_state.ooc_channel.set(channel.clone());
                                         }
@@ -143,7 +145,7 @@ pub fn ServerSettings() -> impl IntoView {
                                     index=7
                                     guild_id=guild_id()
                                     active_dropdown=active_dropdown
-                                    on_change= Callback::new(move |users: Vec<String>| {
+                                    on_change=Callback::new(move |users: Vec<String>| {
                                         if let Some(user) = users.first() {
                                             global_state.forbidden_user.set(user.clone());
                                         }

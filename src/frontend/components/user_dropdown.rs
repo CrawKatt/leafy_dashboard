@@ -76,7 +76,10 @@ pub fn UserDropdown(
                         }>
                             {move || Suspend::new(async move {
                                 let users = users.await;
-                                let options = users.iter().map(|user| (user.user.id.clone(), user.user.username.clone())).collect::<Vec<(String, String)>>();
+                                let options = users
+                                    .iter()
+                                    .map(|user| (user.user.id.clone(), user.user.username.clone()))
+                                    .collect::<Vec<(String, String)>>();
 
                                 view! {
                                     <div>

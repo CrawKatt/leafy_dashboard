@@ -151,7 +151,8 @@ pub fn SaveChangesButton(
     view! {
         <button
             on:click=save_settings
-            class="py-2 px-4 text-white bg-indigo-500 rounded hover:bg-indigo-600">
+            class="py-2 px-4 text-white bg-indigo-500 rounded hover:bg-indigo-600"
+        >
             "Save Changes"
         </button>
     }

@@ -14,18 +14,24 @@ pub fn TimeoutDropdown(
     view! {
         <Card title=title>
             {move || {
-                let duration_mapping: Vec<(String, String)> = duration.iter().map(|dur| {
-                    match dur.as_str() {
-                        "1 Minuto" => (dur.clone(), "60".to_string()),
-                        "5 Minutos" => (dur.clone(), "300".to_string()),
-                        "10 Minutos" => (dur.clone(), "600".to_string()),
-                        "1 Hora" => (dur.clone(), "3600".to_string()),
-                        "1 Día" => (dur.clone(), "86400".to_string()),
-                        "1 Semana" => (dur.clone(), "604800".to_string()),
-                        _ => (dur.clone(), "0".to_string()),
-                    }
-                }).collect();
-                let options = duration_mapping.iter().map(|(display, _)| display.clone()).collect::<Vec<String>>();
+                let duration_mapping: Vec<(String, String)> = duration
+                    .iter()
+                    .map(|dur| {
+                        match dur.as_str() {
+                            "1 Minuto" => (dur.clone(), "60".to_string()),
+                            "5 Minutos" => (dur.clone(), "300".to_string()),
+                            "10 Minutos" => (dur.clone(), "600".to_string()),
+                            "1 Hora" => (dur.clone(), "3600".to_string()),
+                            "1 Día" => (dur.clone(), "86400".to_string()),
+                            "1 Semana" => (dur.clone(), "604800".to_string()),
+                            _ => (dur.clone(), "0".to_string()),
+                        }
+                    })
+                    .collect();
+                let options = duration_mapping
+                    .iter()
+                    .map(|(display, _)| display.clone())
+                    .collect::<Vec<String>>();
                 view! {
                     <Dropdown
                         options=options

@@ -17,10 +17,16 @@ pub fn RoleDropdown(
     view! {
         <Card title=title>
             {move || {
-                let options = roles.iter().map(|role| (role.id.clone(), role.name.clone())).collect::<Vec<(String, String)>>();
+                let options = roles
+                    .iter()
+                    .map(|role| (role.id.clone(), role.name.clone()))
+                    .collect::<Vec<(String, String)>>();
                 view! {
                     <Dropdown
-                        options={options.iter().map(|(_, name)| name.clone()).collect::<Vec<String>>()}
+                        options={options
+                            .iter()
+                            .map(|(_, name)| name.clone())
+                            .collect::<Vec<String>>()}
                         index=index
                         active_dropdown=active_dropdown
                         allow_multiple=allow_multiple

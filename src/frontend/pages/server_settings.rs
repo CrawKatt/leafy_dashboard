@@ -1,20 +1,20 @@
+use crate::frontend::components::channel_dropdown::ChannelDropdown;
 use crate::frontend::components::header::Header;
 use crate::frontend::components::role_dropdown::RoleDropdown;
 use crate::frontend::components::sidebar::Sidebar;
-use crate::frontend::components::channel_dropdown::ChannelDropdown;
-use crate::frontend::pages::loading_indicator::LoadingIndicator;
 use crate::frontend::components::text_card::TextCard;
 use crate::frontend::components::user_dropdown::UserDropdown;
-use crate::frontend::components::save_changes_button::SaveChangesButton;
+use crate::frontend::pages::loading_indicator::LoadingIndicator;
 use crate::models::guild::{DiscordChannel, DiscordRole};
 
-use std::fmt::Debug;
+use crate::frontend::global_state::GlobalState;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params;
 use leptos_router::params::Params;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
-use crate::frontend::global_state::GlobalState;
+use std::fmt::Debug;
+use crate::frontend::components::timeout_dropdown::TimeoutDropdown;
 
 #[derive(Params, PartialEq)]
 pub struct DashboardParams {
@@ -44,6 +44,14 @@ pub fn ServerSettings() -> impl IntoView {
             {move || Suspend::new(async move {
                 let roles = roles.await;
                 let channels = channels.await;
+                let timeout_duration = vec![
+                    "1 Minuto".to_string(),
+                    "5 Minutos".to_string(),
+                    "10 Minutos".to_string(),
+                    "1 Hora".to_string(),
+                    "1 Día".to_string(),
+                    "1 Semana".to_string()
+                ];
                 view! {
                     <div class="flex min-h-screen text-white bg-gray-900">
                         <Sidebar />
@@ -70,16 +78,15 @@ pub fn ServerSettings() -> impl IntoView {
                                         }
                                     })
                                 />
-                                <ChannelDropdown
+                                <TimeoutDropdown
                                     title="Timeout Duration"
                                     index=2
                                     allow_multiple=false
-                                    channels=channels.clone()
+                                    duration=timeout_duration
                                     active_dropdown=active_dropdown
-                                    on_change= Callback::new(move |channels: Vec<String>| {
-                                        // TODO: Cambiar por TimeOut Duration
-                                        if let Some(channel) = channels.first() {
-                                            global_state.forbidden_role.set(channel.clone());
+                                    on_change=Callback::new(move |durations: Vec<String>| {
+                                    if let Some(duration_in_seconds) = durations.first() {
+                                            global_state.timeout_time.set(duration_in_seconds.clone());
                                         }
                                     })
                                 />
@@ -160,20 +167,6 @@ pub fn ServerSettings() -> impl IntoView {
                                     on_change=global_state.welcome_message
                                 />
                             </div>
-                            <SaveChangesButton
-                                admin_roles=global_state.admin_roles
-                                guild_id=guild_id()
-                                forbidden_user=global_state.forbidden_user
-                                timeout_time=global_state.timeout_time
-                                forbidden_role=global_state.forbidden_role
-                                welcome_channel=global_state.welcome_channel
-                                logs_channel=global_state.logs_channel
-                                exceptions_channel=global_state.exceptions_channel
-                                ooc_channel=global_state.ooc_channel
-                                warn_message=global_state.warn_message
-                                timeout_message=global_state.timeout_message
-                                welcome_message=global_state.welcome_message
-                            />
                         </div>
                     </div>
                 }

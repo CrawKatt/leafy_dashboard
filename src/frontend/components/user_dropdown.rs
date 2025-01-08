@@ -76,16 +76,13 @@ pub fn UserDropdown(
                         }>
                             {move || Suspend::new(async move {
                                 let users = users.await;
-                                let user_names = users
-                                    .iter()
-                                    .map(|u| u.user.username.clone())
-                                    .collect::<Vec<String>>();
+                                let options = users.iter().map(|user| (user.user.id.clone(), user.user.username.clone())).collect::<Vec<(String, String)>>();
 
                                 view! {
                                     <div>
-                                        {user_names
+                                        {options
                                             .into_iter()
-                                            .map(|name| {
+                                            .map(|(id, name)| {
                                                 let name_clone = name.clone();
                                                 let is_selected = move || {
                                                     selected_options.get().contains(&name_clone)
@@ -103,7 +100,7 @@ pub fn UserDropdown(
                                                                         current.clear();
                                                                         current.push(name.clone());
                                                                     }
-                                                                    on_change.run(current.clone());
+                                                                    on_change.run(vec![id.clone()]);
                                                                 });
                                                         }
                                                     >

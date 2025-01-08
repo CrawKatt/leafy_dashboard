@@ -1,4 +1,4 @@
-use leptos::logging::log;
+use leptos::logging::{error, log};
 use leptos::prelude::*;
 use leptos::task::spawn_local;
 use crate::models::guild::{Admin, Channels, Forbidden, GuildData, Messages, TimeOut};
@@ -57,7 +57,7 @@ pub fn SaveChangesButton(
 
             match response {
                 Ok(code) => log!("Settins saved successfully {code:#?}"),
-                Err(why) => log::error!("Failed to save settings {:#?}", why)
+                Err(why) => error!("Failed to save settings {why:#?}")
             }
         });
     };

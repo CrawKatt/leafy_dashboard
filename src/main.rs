@@ -15,6 +15,7 @@ use leptos_meta::MetaTags;
 
 use crate::api::auth::{auth_callback, auth_redirect};
 use crate::api::channel::get_channels;
+use crate::api::get_settings::get_settings;
 use crate::api::guild::{get_guild_id, get_servers};
 use crate::api::role::get_roles;
 use crate::api::save_settings::save_settings;
@@ -44,6 +45,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_channels)
             .service(get_users)
             .service(save_settings)
+            .service(get_settings)
             .leptos_routes(routes, {
                 let leptos_options = leptos_options.clone();
                 move || {

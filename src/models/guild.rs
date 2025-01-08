@@ -1,6 +1,13 @@
 use serde::{Deserialize, Serialize};
 use surrealdb::RecordId;
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct PatchOperation {
+    pub op: String,
+    pub path: String,
+    pub value: serde_json::Value,
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, Eq)]
 pub struct DiscordServer {
     pub guild_id: String,

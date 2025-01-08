@@ -105,8 +105,6 @@ pub fn SaveChangesButton(
             },
         ];
 
-        log!("Datos para enviar: {:#?}", data_to_save);
-
         spawn_local(async move {
             let client = reqwest::Client::new();
             let check_config = client
@@ -119,7 +117,6 @@ pub fn SaveChangesButton(
                 _ => false
             };
 
-            log!("Config exists is {config_exists}");
             if config_exists {
                 let data_to_update = json!({
                     "guild_id": guild_id,

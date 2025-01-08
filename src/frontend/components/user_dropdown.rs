@@ -11,6 +11,7 @@ pub fn UserDropdown(
     index: usize,
     guild_id: String,
     active_dropdown: RwSignal<Option<usize>>,
+    on_change: Callback<Vec<String>>
 ) -> impl IntoView {
     let (selected_options, set_selected_options) = signal(vec![]);
     let (search_term, set_search_term) = signal(String::new());
@@ -75,16 +76,16 @@ pub fn UserDropdown(
                         }>
                             {move || Suspend::new(async move {
                                 let users = users.await;
-                                let user_names = users
+                                let options = users
                                     .iter()
-                                    .map(|u| u.user.username.clone())
-                                    .collect::<Vec<String>>();
+                                    .map(|user| (user.user.id.clone(), user.user.username.clone()))
+                                    .collect::<Vec<(String, String)>>();
 
                                 view! {
                                     <div>
-                                        {user_names
+                                        {options
                                             .into_iter()
-                                            .map(|name| {
+                                            .map(|(id, name)| {
                                                 let name_clone = name.clone();
                                                 let is_selected = move || {
                                                     selected_options.get().contains(&name_clone)
@@ -102,6 +103,7 @@ pub fn UserDropdown(
                                                                         current.clear();
                                                                         current.push(name.clone());
                                                                     }
+                                                                    on_change.run(vec![id.clone()]);
                                                                 });
                                                         }
                                                     >

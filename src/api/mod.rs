@@ -5,3 +5,4 @@ pub mod channel;
 pub mod role;
 pub mod guild;
 pub mod save_settings;
+pub mod get_settings;

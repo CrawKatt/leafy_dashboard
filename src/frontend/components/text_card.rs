@@ -4,7 +4,7 @@ use leptos::prelude::*;
 pub fn TextCard(
     title: &'static str,
     placeholder: &'static str,
-    on_change: WriteSignal<String>
+    on_change: RwSignal<String>
 ) -> impl IntoView {
     view! {
         <div class="p-4 bg-gray-700 rounded-lg border border-gray-600 shadow-md">

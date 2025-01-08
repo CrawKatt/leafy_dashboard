@@ -1,6 +1,7 @@
 use crate::frontend::pages::home::Home;
 use crate::frontend::pages::dashboard::Dashboard;
 use crate::frontend::pages::server_settings::ServerSettings;
+use crate::frontend::global_state::provide_global_state;
 
 use leptos::prelude::*;
 use leptos_meta::*;
@@ -12,6 +13,7 @@ use leptos_router::{
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
+    provide_global_state();
 
     view! {
         <Stylesheet id="leptos" href="/pkg/tailwind_actix.css" />

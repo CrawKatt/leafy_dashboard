@@ -6,6 +6,7 @@ pub fn Dropdown(
     index: usize,
     active_dropdown: RwSignal<Option<usize>>,
     allow_multiple: bool, // Nueva propiedad para controlar selección única o múltiple
+    on_change: Callback<Vec<String>>,
 ) -> impl IntoView {
     let (selected_options, set_selected_options) = signal(vec![]);
 
@@ -76,6 +77,7 @@ pub fn Dropdown(
                                                     current.push(option.clone());
                                                 }
                                             }
+                                            on_change.run(current.clone());
                                         });
                                 }
                             >

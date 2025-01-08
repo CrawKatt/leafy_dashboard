@@ -22,7 +22,6 @@ async fn save_settings(settings: web::Json<Value>) -> impl Responder {
         return HttpResponse::Created().body("Ajustes Guardados")
     }
 
-    // Aquí manejamos la actualización con PATCH
     let Some(patch) = settings.get("patch").and_then(Value::as_array) else {
         return HttpResponse::BadRequest().body("Datos de actualización inválidos")
     };
@@ -32,7 +31,11 @@ async fn save_settings(settings: web::Json<Value>) -> impl Responder {
             operation.get("path").and_then(Value::as_str),
             operation.get("value")
         ) {
-            update_guild_configs(&guild_id, path, &value).await;
+            if !value.is_null() &&
+                !(path == "admins/role" && value.as_array().map_or(false, |arr| arr.is_empty())) &&
+                !(value.is_string() && value.as_str().map_or(false, |s| s.is_empty())) {
+                update_guild_configs(&guild_id, path, &value).await;
+            }
         }
     }
 

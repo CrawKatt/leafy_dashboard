@@ -15,34 +15,24 @@ pub struct GlobalState {
     pub warn_message: RwSignal<String>,
 }
 
-pub fn use_global_state() -> GlobalState {
-    let admin_roles = RwSignal::new(vec![String::new()]);
-    let forbidden_user = RwSignal::new(String::new());
-    let forbidden_role = RwSignal::new(String::new());
-    let timeout_time = RwSignal::new(String::new());
-    let welcome_channel = RwSignal::new(String::new());
-    let ooc_channel = RwSignal::new(String::new());
-    let logs_channel = RwSignal::new(String::new());
-    let exceptions_channel = RwSignal::new(String::new());
-    let welcome_message = RwSignal::new(String::new());
-    let timeout_message = RwSignal::new(String::new());
-    let warn_message = RwSignal::new(String::new());
-
-    GlobalState {
-        admin_roles,
-        forbidden_user,
-        forbidden_role,
-        timeout_time,
-        welcome_channel,
-        ooc_channel,
-        logs_channel,
-        exceptions_channel,
-        welcome_message,
-        timeout_message,
-        warn_message,
+impl GlobalState {
+    pub fn new() -> Self {
+        Self {
+            admin_roles: RwSignal::new(vec![String::new()]),
+            forbidden_user: RwSignal::new(String::new()),
+            forbidden_role: RwSignal::new(String::new()),
+            timeout_time: RwSignal::new(String::new()),
+            welcome_channel: RwSignal::new(String::new()),
+            ooc_channel: RwSignal::new(String::new()),
+            logs_channel: RwSignal::new(String::new()),
+            exceptions_channel: RwSignal::new(String::new()),
+            welcome_message: RwSignal::new(String::new()),
+            timeout_message: RwSignal::new(String::new()),
+            warn_message: RwSignal::new(String::new()),
+        }
     }
 }
 
 pub fn provide_global_state() {
-    provide_context(use_global_state())
+    provide_context(GlobalState::new())
 }

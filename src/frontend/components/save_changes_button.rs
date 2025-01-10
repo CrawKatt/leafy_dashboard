@@ -1,6 +1,7 @@
 use leptos::logging::{error, log};
 use leptos::prelude::*;
 use leptos::task::spawn_local;
+use reqwest::Client;
 use serde_json::json;
 use crate::frontend::global_state::GlobalState;
 use crate::models::guild::{Admin, Channels, Forbidden, GuildData, Messages, PatchOperation, TimeOut};
@@ -15,44 +16,13 @@ pub fn SaveChangesButton(guild_id: String) -> impl IntoView {
         let operations = create_operations(&global_state);
 
         spawn_local(async move {
-            let client = reqwest::Client::new();
-            let check_config = client
-                .get(format!("http://localhost:3000/api/get_settings/{guild_id}"))
-                .send()
-                .await;
-
-            let config_exists = match check_config {
-                Ok(resp) if resp.status().is_success() => resp.json::<bool>().await.unwrap_or(false),
-                _ => false
-            };
+            let client = Client::new();
+            let config_exists = get_config_data(&client, &guild_id).await;
 
             if config_exists {
-                let data_to_update = json!({
-                    "guild_id": guild_id,
-                    "patch": operations
-                });
-
-                let response = client
-                    .put("http://localhost:3000/api/save_settings")
-                    .json(&data_to_update)
-                    .send()
-                    .await;
-
-                match response {
-                    Ok(code) => log!("Settins saved successfully {code:#?}"),
-                    Err(why) => error!("Failed to save settings {why:#?}")
-                }
+                update_data(guild_id, operations, client).await;
             } else {
-                let response = client
-                    .put("http://localhost:3000/api/save_settings")
-                    .json(&data_to_save)
-                    .send()
-                    .await;
-
-                match response {
-                    Ok(code) => log!("Settins saved successfully {code:#?}"),
-                    Err(why) => error!("Failed to save settings {why:#?}")
-                }
+                save_data(data_to_save, client).await;
             }
         });
     };
@@ -153,4 +123,51 @@ fn create_operations(global_state: &GlobalState) -> Vec<PatchOperation> {
             value: json!(global_state.warn_message.get_untracked()),
         },
     ]
+}
+
+async fn update_data(
+    guild_id: String,
+    operations: Vec<PatchOperation>,
+    client: Client
+) {
+    let data_to_update = json!({
+        "guild_id": guild_id,
+        "patch": operations
+    });
+
+    let response = client
+        .put("http://localhost:3000/api/save_settings")
+        .json(&data_to_update)
+        .send()
+        .await;
+
+    match response {
+        Ok(code) => log!("Settins saved successfully {code:#?}"),
+        Err(why) => error!("Failed to save settings {why:#?}")
+    }
+}
+
+async fn save_data(data_to_save: GuildData, client: Client) {
+    let response = client
+        .put("http://localhost:3000/api/save_settings")
+        .json(&data_to_save)
+        .send()
+        .await;
+
+    match response {
+        Ok(code) => log!("Settins saved successfully {code:#?}"),
+        Err(why) => error!("Failed to save settings {why:#?}")
+    }
+}
+
+async fn get_config_data(client: &Client, guild_id: &String) -> bool {
+    let check_config = client
+        .get(format!("http://localhost:3000/api/get_settings/{guild_id}"))
+        .send()
+        .await;
+
+    match check_config {
+        Ok(resp) if resp.status().is_success() => resp.json::<bool>().await.unwrap_or(false),
+        _ => false
+    }
 }

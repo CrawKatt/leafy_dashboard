@@ -1,10 +1,10 @@
+use crate::models::guild::GuildData;
 use once_cell::sync::Lazy;
 use serde_json::Value;
 use surrealdb::engine::remote::ws::{Client as SurrealClient, Ws};
 use surrealdb::opt::auth::Root;
 use surrealdb::opt::PatchOp;
 use surrealdb::Surreal;
-use crate::models::guild::GuildData;
 
 pub static DB: Lazy<Surreal<SurrealClient>> = Lazy::new(Surreal::init);
 
@@ -41,10 +41,10 @@ pub async fn update_guild_configs(guild_id: &String, path: &str, value: &Value) 
     result
 }
 
-pub async fn add_guild_config(guild_config: GuildData) -> Option<GuildData> {
+pub async fn add_guild_config(guild_id: &String, guild_config: GuildData) -> Option<GuildData> {
     DB.use_ns("dashboard-namespace").use_db("dashboard").await.unwrap();
     let results = DB
-        .create(("guild_config", guild_config.guild_id.clone()))
+        .create(("guild_config", guild_id))
         .content(guild_config)
         .await;
 

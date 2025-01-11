@@ -1,3 +1,4 @@
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use surrealdb::RecordId;
 
@@ -102,34 +103,32 @@ pub struct AvatarDecorationData {
     pub sku_id: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Builder)]
 pub struct GuildData {
     pub admins: Admin,
-    pub guild_id: String,
-    pub id: Option<RecordId>,
     pub forbidden: Forbidden,
     pub time_out: TimeOut,
     pub channels: Channels,
     pub messages: Messages,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Builder)]
 pub struct Admin {
     pub role: Vec<String>
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Builder)]
 pub struct Forbidden {
     pub user: String,
     pub role: String
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Builder)]
 pub struct TimeOut {
     pub time: String
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Builder)]
 pub struct Channels {
     pub welcome: String,
     pub ooc: String,
@@ -137,7 +136,7 @@ pub struct Channels {
     pub exceptions: String
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Builder)]
 pub struct Messages {
     pub welcome: String,
     pub time_out: String,

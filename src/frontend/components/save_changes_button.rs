@@ -12,7 +12,7 @@ pub fn SaveChangesButton(guild_id: String) -> impl IntoView {
     let save_settings = move |_| {
         let guild_id = guild_id.clone();
         let global_state = global_state.clone();
-        let data_to_save = create_data(&global_state, &guild_id);
+        let data_to_save = create_data(&global_state);
         let operations = create_operations(&global_state);
 
         spawn_local(async move {
@@ -22,7 +22,7 @@ pub fn SaveChangesButton(guild_id: String) -> impl IntoView {
             if config_exists {
                 update_data(guild_id, operations, client).await;
             } else {
-                save_data(data_to_save, client).await;
+                save_data(data_to_save, guild_id, client).await;
             }
         });
     };
@@ -37,32 +37,35 @@ pub fn SaveChangesButton(guild_id: String) -> impl IntoView {
     }
 }
 
-fn create_data(global_state: &GlobalState, guild_id: &String) -> GuildData {
-    GuildData {
-        admins: Admin {
-            role: global_state.admin_roles.get()
-        },
-        guild_id: guild_id.clone(),
-        id: None,
-        forbidden: Forbidden {
-            user: global_state.forbidden_user.get(),
-            role: global_state.forbidden_role.get(),
-        },
-        time_out: TimeOut {
-            time: global_state.timeout_time.get()
-        },
-        channels: Channels {
-            welcome: global_state.welcome_channel.get(),
-            ooc: global_state.ooc_channel.get(),
-            logs: global_state.logs_channel.get(),
-            exceptions: global_state.exceptions_channel.get(),
-        },
-        messages: Messages {
-            welcome: global_state.welcome_message.get(),
-            time_out: global_state.timeout_message.get(),
-            warn: global_state.warn_message.get()
-        }
-    }
+fn create_data(global_state: &GlobalState) -> GuildData {
+    GuildData::builder()
+        .admins(Admin::builder()
+            .role(global_state.admin_roles.get())
+            .build()
+        )
+        .forbidden(Forbidden::builder()
+            .user(global_state.forbidden_user.get())
+            .role(global_state.forbidden_role.get())
+            .build()
+        )
+        .time_out(TimeOut::builder()
+            .time(global_state.timeout_time.get())
+            .build()
+        )
+        .channels(Channels::builder()
+            .welcome(global_state.welcome_channel.get())
+            .ooc(global_state.ooc_channel.get())
+            .logs(global_state.logs_channel.get())
+            .exceptions(global_state.exceptions_channel.get())
+            .build()
+        )
+        .messages(Messages::builder()
+            .welcome(global_state.welcome_message.get())
+            .time_out(global_state.timeout_message.get())
+            .warn(global_state.warn_message.get())
+            .build()
+        )
+        .build()
 }
 
 fn create_operations(global_state: &GlobalState) -> Vec<PatchOperation> {
@@ -147,7 +150,11 @@ async fn update_data(
     }
 }
 
-async fn save_data(data_to_save: GuildData, client: Client) {
+async fn save_data(data_to_save: GuildData, guild_id: String, client: Client) {
+    let data_to_save = json!({
+        "guild_id": guild_id,
+        "guild_config": data_to_save
+    });
     let response = client
         .put("http://localhost:3000/api/save_settings")
         .json(&data_to_save)

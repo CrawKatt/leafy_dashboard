@@ -14,15 +14,21 @@ async fn save_settings(settings: web::Json<Value>) -> impl Responder {
     let guild = get_guild_config(&guild_id).await;
 
     if guild.is_none() {
-        let Ok(guild_data) = serde_json::from_value::<GuildData>(settings.clone()) else {
-            return HttpResponse::BadRequest().body("Datos de configuración inválidos")
+        // Si no existe, creamos una nueva configuración usando guild_id pero sin incluirlo en GuildData
+        let Some(config) = settings
+            .get("guild_config")
+            .and_then(|value| serde_json::from_value::<GuildData>(value.clone()).ok())
+        else {
+            println!("Datos de configuración inválidos");
+            return HttpResponse::BadRequest().body("Datos de configuración inválidos");
         };
 
-        add_guild_config(guild_data).await;
-        return HttpResponse::Created().body("Ajustes Guardados")
+        add_guild_config(&guild_id, config).await;
+        return HttpResponse::Created().body("Ajustes Guardados");
     }
 
     let Some(patch) = settings.get("patch").and_then(Value::as_array) else {
+        println!("Error al obtener el patch, datos inválidos");
         return HttpResponse::BadRequest().body("Datos de actualización inválidos")
     };
 

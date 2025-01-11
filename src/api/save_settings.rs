@@ -14,7 +14,6 @@ async fn save_settings(settings: web::Json<Value>) -> impl Responder {
     let guild = get_guild_config(&guild_id).await;
 
     if guild.is_none() {
-        // Si no existe, creamos una nueva configuración usando guild_id pero sin incluirlo en GuildData
         let Some(config) = settings
             .get("guild_config")
             .and_then(|value| serde_json::from_value::<GuildData>(value.clone()).ok())

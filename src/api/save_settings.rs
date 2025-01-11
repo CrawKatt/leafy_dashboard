@@ -19,7 +19,6 @@ async fn save_settings(settings: web::Json<Value>) -> impl Responder {
             .get("guild_config")
             .and_then(|value| serde_json::from_value::<GuildData>(value.clone()).ok())
         else {
-            println!("Datos de configuración inválidos");
             return HttpResponse::BadRequest().body("Datos de configuración inválidos");
         };
 
@@ -28,7 +27,6 @@ async fn save_settings(settings: web::Json<Value>) -> impl Responder {
     }
 
     let Some(patch) = settings.get("patch").and_then(Value::as_array) else {
-        println!("Error al obtener el patch, datos inválidos");
         return HttpResponse::BadRequest().body("Datos de actualización inválidos")
     };
 

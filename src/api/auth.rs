@@ -22,7 +22,7 @@ pub async fn auth_redirect() -> impl Responder {
         None,
     )
         .set_redirect_uri(
-            RedirectUrl::new("http://localhost:3000/api/callback".to_string()).expect("Invalid redirect URI"),
+            RedirectUrl::new("http://127.0.0.1:3000/api/callback".to_string()).expect("Invalid redirect URI"),
         );
 
     let (auth_url, _csrf_token) = client
@@ -50,7 +50,7 @@ pub async fn auth_callback(query: web::Query<AuthQuery>) -> impl Responder {
         Some(TokenUrl::new("https://discord.com/api/oauth2/token".to_string()).expect("Invalid token URL")),
     )
         .set_redirect_uri(
-            RedirectUrl::new("http://localhost:3000/api/callback".to_string()).expect("Invalid redirect URI"),
+            RedirectUrl::new("http://127.0.0.1:3000/api/callback".to_string()).expect("Invalid redirect URI"),
         );
 
     let client = client

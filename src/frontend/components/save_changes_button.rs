@@ -139,7 +139,7 @@ async fn update_data(
     });
 
     let response = client
-        .put("http://localhost:3000/api/save_settings")
+        .put("http://127.0.0.1:3000/api/save_settings")
         .json(&data_to_update)
         .send()
         .await;
@@ -156,7 +156,7 @@ async fn save_data(data_to_save: GuildData, guild_id: String, client: Client) {
         "guild_config": data_to_save
     });
     let response = client
-        .put("http://localhost:3000/api/save_settings")
+        .put("http://127.0.0.1:3000/api/save_settings")
         .json(&data_to_save)
         .send()
         .await;
@@ -169,7 +169,7 @@ async fn save_data(data_to_save: GuildData, guild_id: String, client: Client) {
 
 async fn get_config_data(client: &Client, guild_id: &String) -> bool {
     let check_config = client
-        .get(format!("http://localhost:3000/api/get_settings/{guild_id}"))
+        .get(format!("http://127.0.0.1:3000/api/get_settings/{guild_id}"))
         .send()
         .await;
 

@@ -11,7 +11,7 @@ pub fn Dashboard() -> impl IntoView {
     let fetch_servers = move || {
         spawn_local(async move {
             let client = reqwest::Client::new()
-                .get("http://localhost:3000/api/servers")
+                .get("http://127.0.0.1:3000/api/servers")
                 .send()
                 .await;
 

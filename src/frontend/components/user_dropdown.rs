@@ -136,7 +136,7 @@ async fn fetch_users(guild_id: String, target_user: String) -> Vec<DiscordUser> 
         return vec![DiscordUser::default()]
     }
 
-    fetch_and_parse::<Vec<DiscordUser>>(&Client::new(), &format!("http://localhost:3000/api/users/{guild_id}/{target_user}"))
+    fetch_and_parse::<Vec<DiscordUser>>(&Client::new(), &format!("http://127.0.0.1:3000/api/users/{guild_id}/{target_user}"))
         .await
         .map_err(|why| log!("error al hacer fetch a la API {why}"))
         .unwrap_or_default()

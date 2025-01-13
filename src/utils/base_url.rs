@@ -10,5 +10,5 @@ impl BaseUrl {
 }
 
 pub static BASE_URL: Lazy<String> = Lazy::new(|| {
-    env::var("BASE_URL").unwrap_or_else(|_| String::from("http://localhost:3000"))
+    env::var("BASE_URL").expect("BASE_URL not found")
 });

@@ -4,6 +4,7 @@ use reqwest::Client;
 use crate::models::guild::DiscordUser;
 use crate::frontend::components::card::Card;
 use crate::frontend::pages::server_settings::fetch_and_parse;
+use crate::utils::base_url::BaseUrl;
 
 #[component]
 pub fn UserDropdown(
@@ -136,7 +137,7 @@ async fn fetch_users(guild_id: String, target_user: String) -> Vec<DiscordUser> 
         return vec![DiscordUser::default()]
     }
 
-    fetch_and_parse::<Vec<DiscordUser>>(&Client::new(), &format!("http://127.0.0.1:3000/api/users/{guild_id}/{target_user}"))
+    fetch_and_parse::<Vec<DiscordUser>>(&Client::new(), &format!("{}/api/users/{guild_id}/{target_user}", BaseUrl::get()))
         .await
         .map_err(|why| log!("error al hacer fetch a la API {why}"))
         .unwrap_or_default()

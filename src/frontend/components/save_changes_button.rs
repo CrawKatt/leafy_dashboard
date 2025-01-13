@@ -5,6 +5,7 @@ use reqwest::Client;
 use serde_json::json;
 use crate::frontend::global_state::GlobalState;
 use crate::models::guild::{Admin, Channels, Forbidden, GuildData, Messages, PatchOperation, TimeOut};
+use crate::utils::base_url::BaseUrl;
 
 #[component]
 pub fn SaveChangesButton(guild_id: String) -> impl IntoView {
@@ -139,7 +140,7 @@ async fn update_data(
     });
 
     let response = client
-        .put("http://127.0.0.1:3000/api/save_settings")
+        .put(format!("{}/api/save_settings", BaseUrl::get()))
         .json(&data_to_update)
         .send()
         .await;
@@ -156,7 +157,7 @@ async fn save_data(data_to_save: GuildData, guild_id: String, client: Client) {
         "guild_config": data_to_save
     });
     let response = client
-        .put("http://127.0.0.1:3000/api/save_settings")
+        .put(format!("{}/api/save_settings", BaseUrl::get()))
         .json(&data_to_save)
         .send()
         .await;
@@ -169,7 +170,7 @@ async fn save_data(data_to_save: GuildData, guild_id: String, client: Client) {
 
 async fn get_config_data(client: &Client, guild_id: &String) -> bool {
     let check_config = client
-        .get(format!("http://127.0.0.1:3000/api/get_settings/{guild_id}"))
+        .get(format!("{}/api/get_settings/{guild_id}", BaseUrl::get()))
         .send()
         .await;
 

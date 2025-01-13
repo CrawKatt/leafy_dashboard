@@ -14,6 +14,7 @@ struct AuthQuery {
 pub async fn auth_redirect() -> impl Responder {
     let client_id = env::var("CLIENT_ID").expect("DISCORD_CLIENT_ID not set");
     let client_secret = env::var("CLIENT_SECRET").expect("DISCORD_CLIENT_SECRET not set");
+    let redirect_uri = env::var("DISCORD_REDIRECT_URI").expect("REDIRECT_URI not set");
 
     let client = BasicClient::new(
         ClientId::new(client_id),
@@ -22,7 +23,7 @@ pub async fn auth_redirect() -> impl Responder {
         None,
     )
         .set_redirect_uri(
-            RedirectUrl::new("http://127.0.0.1:3000/api/callback".to_string()).expect("Invalid redirect URI"),
+            RedirectUrl::new(redirect_uri).expect("Invalid redirect URI"),
         );
 
     let (auth_url, _csrf_token) = client
@@ -42,6 +43,7 @@ pub async fn auth_redirect() -> impl Responder {
 pub async fn auth_callback(query: web::Query<AuthQuery>) -> impl Responder {
     let client_id = env::var("CLIENT_ID").expect("DISCORD_CLIENT_ID not set");
     let client_secret = env::var("CLIENT_SECRET").expect("DISCORD_CLIENT_SECRET not set");
+    let redirect_uri = env::var("DISCORD_REDIRECT_URI").expect("REDIRECT_URI not set");
 
     let client = BasicClient::new(
         ClientId::new(client_id),
@@ -50,7 +52,7 @@ pub async fn auth_callback(query: web::Query<AuthQuery>) -> impl Responder {
         Some(TokenUrl::new("https://discord.com/api/oauth2/token".to_string()).expect("Invalid token URL")),
     )
         .set_redirect_uri(
-            RedirectUrl::new("http://127.0.0.1:3000/api/callback".to_string()).expect("Invalid redirect URI"),
+            RedirectUrl::new(redirect_uri).expect("Invalid redirect URI"),
         );
 
     let client = client

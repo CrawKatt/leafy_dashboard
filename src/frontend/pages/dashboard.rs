@@ -3,6 +3,7 @@ use leptos::prelude::*;
 use leptos::task::spawn_local;
 use crate::models::guild::DiscordServer;
 use crate::frontend::components::server_card::ServerCard;
+use crate::utils::base_url::BaseUrl;
 
 // LADO DEL SERVIDOR, NO USAR REQWASM NI COSAS CON WASM. UTILIZAR ÚNICAMENTE CÓDIGO NATIVO
 #[component]
@@ -11,7 +12,7 @@ pub fn Dashboard() -> impl IntoView {
     let fetch_servers = move || {
         spawn_local(async move {
             let client = reqwest::Client::new()
-                .get("http://127.0.0.1:3000/api/servers")
+                .get(format!("{}/api/servers", BaseUrl::get()))
                 .send()
                 .await;
 

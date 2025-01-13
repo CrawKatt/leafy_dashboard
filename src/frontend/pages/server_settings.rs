@@ -15,6 +15,7 @@ use reqwest::Client;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 use crate::frontend::components::timeout_dropdown::TimeoutDropdown;
+use crate::utils::base_url::BaseUrl;
 
 #[derive(Params, PartialEq)]
 pub struct DashboardParams {
@@ -178,11 +179,11 @@ pub fn ServerSettings() -> impl IntoView {
 }
 
 async fn fetch_roles(guild_id: String) -> Vec<DiscordRole> {
-    fetch_and_parse::<Vec<DiscordRole>>(&Client::new(), &format!("http://127.0.0.1:3000/api/roles/{guild_id}")).await.unwrap_or_default()
+    fetch_and_parse::<Vec<DiscordRole>>(&Client::new(), &format!("{}/api/roles/{guild_id}", BaseUrl::get())).await.unwrap_or_default()
 }
 
 async fn fetch_channels(guild_id: String) -> Vec<DiscordChannel> {
-    fetch_and_parse::<Vec<DiscordChannel>>(&Client::new(), &format!("http://127.0.0.1:3000/api/channels/{guild_id}")).await.unwrap_or_default()
+    fetch_and_parse::<Vec<DiscordChannel>>(&Client::new(), &format!("{}/api/channels/{guild_id}", BaseUrl::get())).await.unwrap_or_default()
 }
 
 pub async fn fetch_and_parse<T: DeserializeOwned + Debug>(

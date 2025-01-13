@@ -4,14 +4,8 @@ mod frontend;
 mod services;
 mod models;
 mod db;
+mod utils;
 mod api; // NO IMPORTAR LOS MÓDULOS DEL BACKEND EN lib.rs
-
-use actix_files::Files;
-use actix_web::*;
-use dotenv::dotenv;
-use leptos::prelude::*;
-use leptos_actix::{generate_route_list, LeptosRoutes};
-use leptos_meta::MetaTags;
 
 use crate::api::auth::{auth_callback, auth_redirect};
 use crate::api::channel::get_channels;
@@ -22,6 +16,13 @@ use crate::api::save_settings::save_settings;
 use crate::api::user::get_users;
 use crate::app::*;
 use crate::db::surreal::setup_db;
+
+use actix_files::Files;
+use actix_web::*;
+use dotenv::dotenv;
+use leptos::prelude::*;
+use leptos_actix::{generate_route_list, LeptosRoutes};
+use leptos_meta::MetaTags;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

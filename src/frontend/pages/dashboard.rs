@@ -1,9 +1,9 @@
-use leptos::*;
+use crate::frontend::components::server_card::ServerCard;
+use crate::models::guild::DiscordServer;
+use crate::utils::BASE_URL;
+use leptos::logging::error;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
-use crate::models::guild::DiscordServer;
-use crate::frontend::components::server_card::ServerCard;
-use crate::utils::BASE_URL;
 
 // LADO DEL SERVIDOR, NO USAR REQWASM NI COSAS CON WASM. UTILIZAR ÚNICAMENTE CÓDIGO NATIVO
 #[component]
@@ -17,7 +17,7 @@ pub fn Dashboard() -> impl IntoView {
                 .await;
 
             let Ok(response) = client else {
-                return log::error!("Ocurrió un error al conectar con la API")
+                return error!("Ocurrió un error al conectar con la API")
             };
 
             if response.status().is_success() {
@@ -25,7 +25,7 @@ pub fn Dashboard() -> impl IntoView {
                     set_servers.set(data);
                 }
             } else {
-                log::error!("Falló al consultar servidores: {}", response.status());
+                error!("Falló al consultar servidores: {}", response.status());
             }
         });
     };

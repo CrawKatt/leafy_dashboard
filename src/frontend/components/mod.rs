@@ -10,3 +10,4 @@ pub mod text_card;
 pub mod user_dropdown;
 pub mod save_changes_button;
 pub mod timeout_dropdown;
+pub mod add_role_modal;

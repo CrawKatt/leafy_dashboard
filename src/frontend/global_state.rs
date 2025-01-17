@@ -13,6 +13,7 @@ pub struct GlobalState {
     pub welcome_message: RwSignal<String>,
     pub timeout_message: RwSignal<String>,
     pub warn_message: RwSignal<String>,
+    pub reaction_roles: RwSignal<Vec<(String, String, String)>>
 }
 
 impl GlobalState {
@@ -29,6 +30,7 @@ impl GlobalState {
             welcome_message: RwSignal::new(String::new()),
             timeout_message: RwSignal::new(String::new()),
             warn_message: RwSignal::new(String::new()),
+            reaction_roles: RwSignal::new(Vec::new()),
         }
     }
 }

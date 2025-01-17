@@ -4,6 +4,7 @@ use crate::frontend::components::role_dropdown::RoleDropdown;
 use crate::frontend::components::sidebar::Sidebar;
 use crate::frontend::components::text_card::TextCard;
 use crate::frontend::components::user_dropdown::UserDropdown;
+use crate::frontend::components::add_role_modal::AddRoleModal;
 use crate::frontend::pages::loading_indicator::LoadingIndicator;
 use crate::models::guild::{DiscordChannel, DiscordRole};
 
@@ -26,6 +27,7 @@ pub struct DashboardParams {
 pub fn ServerSettings() -> impl IntoView {
     let global_state: GlobalState = use_context().unwrap();
     let active_dropdown = RwSignal::new(None);
+    let (show_modal, set_show_modal) = signal(false);
     let params = use_params::<DashboardParams>();
     let guild_id = move || params
         .read()
@@ -169,6 +171,19 @@ pub fn ServerSettings() -> impl IntoView {
                                     placeholder="Tu mensaje aquí"
                                     on_change=global_state.welcome_message
                                 />
+                            </div>
+                            <div class="grid grid-cols-2 gap-6 p-6">
+                                <button
+                                    class="px-4 py-2 text-white bg-indigo-500 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                    on:click=move |_| set_show_modal.set(true)
+                                    >
+                                        "Add Role"
+                                </button>
+                                <Show when=move || show_modal.get() fallback=|| ()>
+                                    <AddRoleModal
+                                        set_show_modal=set_show_modal
+                                    />
+                                </Show>
                             </div>
                         </div>
                     </div>
